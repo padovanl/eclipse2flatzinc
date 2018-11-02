@@ -163,9 +163,41 @@ occurrences(V,L,N):-
 	get_var_count(Id),
 	numlist(Id, Id + Length * 2, ListIds),
 	stampa_defined_var(ListIds, Length), 
-	stampa_occurrences_constraint(ListIds),
+	stampa_occurrences_constraint(Length),
+	stampa_occurrences_bool2int(ListIds),
+	stampa_occurrences_global(ListIds,N),
 	ordina_file_fzn.
-	
+
+stampa_occurrences_global(ListIds,N):-
+	open("model.fzn", append, stream),
+	printf(stream,"constraint int_lin_eq(X_INTRODUCED_",[]),
+	reverse(ListIds,Lrev),
+	print_head_occurrences_global_constraint(stream,Lrev),
+	remove_last(ListIds,List),
+	stampa_occurrences_global_loop(stream, List),
+	printf(stream,"-%d);",[N]),
+	close(stream).
+
+print_head_occurrences_global_constraint(Stream,[A|T]):-
+	A1 is A + 1,
+	printf(Stream,"%d_,[",[A1]).
+
+stampa_occurrences_global_loop(Stream,[A,B]):-
+	printf(Stream, "X_INTRODUCED_%d_],", [B]).
+stampa_occurrences_global_loop(Stream,[A,B|T]):-
+	printf(Stream, "X_INTRODUCED_%d_,", [B]),
+	stampa_occurrences_global_loop(Stream,T).
+
+stampa_occurrences_bool2int(ListIds):-
+	open("model.fzn", append, stream),
+	remove_last(ListIds,List),
+	stampa_occurrences_bool2int_loop(stream, List),
+	close(stream).
+
+stampa_occurrences_bool2int_loop(_,[]).
+stampa_occurrences_bool2int_loop(Stream, [A,B|T]):-
+	printf(Stream,"constraint bool2int(X_INTRODUCED_%d_,X_INTRODUCED_%d_):: defines_var(X_INTRODUCED_%d_);\n",[A,B,B]),
+	stampa_occurrences_bool2int_loop(Stream, T).
 
 stampa_defined_var(ListIds,Length):-
 	open("model.fzn", append, stream),
@@ -190,14 +222,33 @@ print_list(Stream,[H|T]):-
 	print_list(Stream,T).
 
 % TODO stampa_occurrences_constraint
-
-stampa_occurrences_constraint(ListIds):-
+% qui andrebbe studiato bene come recuperare le variabili della lista, per ora assumo che tra la dichiarazione della lista e il vincolo non siano state dichiarate altre liste
+stampa_occurrences_constraint(Length):-
 	open("model.fzn", append, stream),
-	stampa_occurrences_constraint_loop(stream, ListIds),
+	get_var_count(NextId),
+	Start is NextId - Length,
+	End is Length - 1,
+	numlist(Start, End, ListIds),
+	stampa_occurrences_constraint_loop(stream, Length, ListIds, Length),
 	close(stream).
 
-stampa_occurrences_constraint_loop(Stream,[A,B|T]):-
+stampa_occurrences_constraint_loop(_,_,[],_).
+stampa_occurrences_constraint_loop(Stream,Length,[H|T], Offset):-
+	printf(Stream,"constraint int_eq_reif(X_INTRODUCED_%d_,", [H]),
+	printf(Stream,"%d,",[Length]),
+	Temp is H + Offset,
+	printf(Stream,"X_INTRODUCED_%d_):: ", [Temp]),
+	printf(Stream,"defines_var(X_INTRODUCED_%d_);\n", [Temp]),
+	Offset1 is Offset + 1,
+	stampa_occurrences_constraint_loop(Stream,Length,T,Offset1).
+	
+	
+remove_last([X|Xs], Ys) :-                 
+   remove_last_loop(Xs, Ys, X).            
 
+remove_last_loop([], [], _).
+remove_last_loop([X1|Xs], [X0|Ys], X0) :-  
+   remove_last_loop(Xs, Ys, X1).  
 	
 
 
