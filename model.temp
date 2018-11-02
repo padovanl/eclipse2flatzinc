@@ -1,0 +1,9 @@
+var 1..5:  X_INTRODUCED_0_;
+var 1..5:  X_INTRODUCED_1_;
+var 1..5:  X_INTRODUCED_2_;
+var 1..5:  X_INTRODUCED_3_;
+var 1..5:  X_INTRODUCED_4_;
+array [1..5] of var int: _386:: output_array([1..5])=[X_INTRODUCED_0_,X_INTRODUCED_1_,X_INTRODUCED_2_,X_INTRODUCED_3_,X_INTRODUCED_4_];
+Nuova dichiarazione
+constraint at_least_int(3,_386,2);
+solve satisfy;
