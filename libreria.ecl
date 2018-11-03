@@ -250,6 +250,65 @@ remove_last_loop([], [], _).
 remove_last_loop([X1|Xs], [X0|Ys], X0) :-  
    remove_last_loop(Xs, Ys, X1).  
 	
+% VINCOLO ELEMENT
+% qui andrebbe studiato bene come recuperare le variabili della lista, per ora assumo che tra la dichiarazione della lista e il vincolo non siano state dichiarate altre liste
+element(Index,List,Value):-
+	get_lines("model.fzn",Lines),
+	element_loop(Lines, Index, List, Value, LinesModificate),
+	open("model.fzn", write, stream),
+	write_lines_to_file(stream, LinesModificate),
+	close(stream).
+
+element_loop([],_,_,_,_).
+element_loop([H|T], Index, List, Value, Lm):-
+	not(array(H)),
+	element_loop(T,Index,List,Value,LineaModificata).
+element_loop([H|T],Index,List,Value,Lm):-
+	array(H),
+	term_string(List,Tmp),
+	substring(Tmp,1,4,_,NomeLista),
+	split_string("array [1..5] of var int: _275:: output_array([1..5])=[X_INTRODUCED_0_,X_INTRODUCED_1_,X_INTRODUCED_2_,X_INTRODUCED_3_,X_INTRODUCED_4_];",":","",SplitList),
+	get_list_name_from_model(SplitList, NomeLista2),
+	NomeLista == NomeLista2.
+	%term_string(L,String),
+	%substring(String,1,4,_,S),
+	%write(stream,S),
+
+element_loop([H|T],Index,List,Value,Lm):-
+	array(H),
+	term_string(List,Tmp),
+	substring(Tmp,1,4,_,NomeLista),
+	split_string("array [1..5] of var int: _275:: output_array([1..5])=[X_INTRODUCED_0_,X_INTRODUCED_1_,X_INTRODUCED_2_,X_INTRODUCED_3_,X_INTRODUCED_4_];",":","",SplitList),
+	get_list_name_from_model(SplitList, NomeLista2),
+	NomeLista \= NomeLista2,
+	element_loop(T,Index,List,Value,Lm).
+
+get_list_name_from_model([A,B|T],ListName):-
+	ListName = B.
+
+array(String):-substring(String,1,5,"array").
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 % LABELING
