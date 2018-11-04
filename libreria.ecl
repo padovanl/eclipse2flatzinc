@@ -262,9 +262,11 @@ element(Index,List,Value):-
 	close(stream).
 
 element_loop([],_,_,_,_,_).
+
 element_loop([H|T], Index, List, Value, Lm, NomeLista):-
 	not(array(H)),
 	element_loop(T,Index,List,Value,Lm, NomeLista).
+
 element_loop([H|T],Index,List,Value,Lm, NomeLista):-
 	array(H),
 	split_string(H,":","",SplitList),
@@ -272,7 +274,7 @@ element_loop([H|T],Index,List,Value,Lm, NomeLista):-
 	split_string(Temp2," ","",SplitList2),
 	get_list_name_from_model(SplitList2, NomeLista2),
 	NomeLista == NomeLista2,
-	modifica_dichiarazione_array_2(H,Index,Value).
+	modifica_dichiarazione_array_2(H,Index,Value,NuovaDichiarazione).
 
 element_loop([H|T],Index,List,Value,Lm, NomeLista):-
 	array(H),
@@ -285,13 +287,39 @@ element_loop([H|T],Index,List,Value,Lm, NomeLista):-
 	NomeLista \= NomeLista2,
 	element_loop(T,Index,List,Value,Lm, NomeLista).
 
-modifica_dichiarazione_array_2(H,Index,Value):-
+modifica_dichiarazione_array_2(H,Index,Value,NuovaDichiarazione):-
 	split_string(H,"=","",L1),
 	get_second_element(L1,S),
 	split_string(S,",","",S1),
 	modifica_dichiarazione_array_loop_2(S1,Index,Value,1,ListaVariabiliModificata),
-	chiamata_di_prova(ListaVariabiliModificata),
-	write(ListaVariabiliModificata).
+	get_first_element(L1,PrimoElemento),
+	string_concat(PrimoElemento,"= ",Temp),
+	crea_stringa_variabili(ListaVariabiliModificata,"",VariabiliModificateString),
+	string_concat(Temp,VariabiliModificateString, NuovaDichiarazione).
+	%write(NuovaDichiarazione).
+
+
+
+
+
+% TODO
+
+crea_stringa_variabili([A],String,Result):-
+	string_concat(String,A,String2),
+	Result = String2.
+crea_stringa_variabili([A|T], String, Result):-
+	string_concat(String,A,Temp),
+	crea_stringa_variabili(T, Temp, Result).
+
+
+
+
+
+
+
+
+get_first_element([A|T],S):-
+	S = A.
 
 modifica_dichiarazione_array_loop_2([], _, _,_,_).
 %primo elemento
@@ -312,6 +340,13 @@ modifica_dichiarazione_array_loop_2([H|T], Index, Value,Cnt,[H1|T1]):-
 	H1 = Result,
 	Cnt1 is Cnt + 1,
 	modifica_dichiarazione_array_loop_2(T,Index,Value,Cnt1,T1).
+
+%non devo modificare l'ultimo elemento
+modifica_dichiarazione_array_loop_2([H], Index, Value,Cnt,[H1]):-
+	Index \= Cnt,
+	H1 = H,
+	Cnt1 is Cnt + 1,
+	modifica_dichiarazione_array_loop_2([],Index,Value,Cnt1,[]).
 
 % non devo modificare elementi intermedi
 modifica_dichiarazione_array_loop_2([H|T], Index, Value,Cnt,[H1|T1]):-
@@ -342,13 +377,6 @@ modifica_dichiarazione_array_loop_2([H|T], Index, Value,Cnt,[H1|T1]):-
 	modifica_dichiarazione_array_loop_2(T,Index,Value,Cnt1,T1).
 
 
-
-%non devo modificare l'ultimo elemento
-modifica_dichiarazione_array_loop_2([H], Index, Value,Cnt,[T1]):-
-	Index \= Cnt,
-	H1 = H,
-	Cnt1 is Cnt + 1,
-	modifica_dichiarazione_array_loop_2([],Index,Value,Cnt1,T1).
 
 get_second_element([A,B|T],S):-
 	S = B.
