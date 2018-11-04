@@ -250,7 +250,7 @@ remove_last_loop([], [], _).
 remove_last_loop([X1|Xs], [X0|Ys], X0) :-  
    remove_last_loop(Xs, Ys, X1).  
 	
-% VINCOLO ELEMENT TODO da finire
+% VINCOLO ELEMENT
 % qui andrebbe studiato bene come recuperare le variabili della lista, per ora assumo che tra la dichiarazione della lista e il vincolo non siano state dichiarate altre liste
 element(Index,List,Value):-
 	get_lines("model.fzn",Lines),
@@ -263,29 +263,31 @@ element(Index,List,Value):-
 
 element_loop([],_,_,_,_,_).
 
-element_loop([H|T], Index, List, Value, Lm, NomeLista):-
+element_loop([H|T], Index, List, Value, [Hlm|Tlm], NomeLista):-
 	not(array(H)),
-	element_loop(T,Index,List,Value,Lm, NomeLista).
+	Hlm = H,
+	element_loop(T,Index,List,Value,Tlm, NomeLista).
 
-element_loop([H|T],Index,List,Value,Lm, NomeLista):-
+element_loop([H|T],Index,List,Value,[Hlm|Tlm], NomeLista):-
 	array(H),
 	split_string(H,":","",SplitList),
 	get_list_name_from_model(SplitList, Temp2),
 	split_string(Temp2," ","",SplitList2),
 	get_list_name_from_model(SplitList2, NomeLista2),
 	NomeLista == NomeLista2,
-	modifica_dichiarazione_array_2(H,Index,Value,NuovaDichiarazione).
+	modifica_dichiarazione_array_2(H,Index,Value,NuovaDichiarazione),
+	Hlm = NuovaDichiarazione,
+	element_loop(T,Index,List,Value,Tlm,NomeLista).
 
-element_loop([H|T],Index,List,Value,Lm, NomeLista):-
+element_loop([H|T],Index,List,Value,[Hlm|Tlm], NomeLista):-
 	array(H),
-	%term_string(List,Tmp),
-	%substring(Tmp,1,4,_,NomeLista),
 	split_string(H,":","",SplitList),
 	get_list_name_from_model(SplitList, Temp2),
 	split_string(Temp2," ","",SplitList2),
 	get_list_name_from_model(SplitList2, NomeLista2),
 	NomeLista \= NomeLista2,
-	element_loop(T,Index,List,Value,Lm, NomeLista).
+	Hlm = H,
+	element_loop(T,Index,List,Value,Tlm, NomeLista).
 
 modifica_dichiarazione_array_2(H,Index,Value,NuovaDichiarazione):-
 	split_string(H,"=","",L1),
@@ -298,12 +300,6 @@ modifica_dichiarazione_array_2(H,Index,Value,NuovaDichiarazione):-
 	string_concat(Temp,VariabiliModificateString, NuovaDichiarazione).
 	%write(NuovaDichiarazione).
 
-
-
-
-
-% TODO
-
 crea_stringa_variabili([A],String,Result):-
 	string_concat(String,A,String2),
 	Result = String2.
@@ -311,17 +307,11 @@ crea_stringa_variabili([A|T], String, Result):-
 	string_concat(String,A,Temp),
 	crea_stringa_variabili(T, Temp, Result).
 
-
-
-
-
-
-
-
 get_first_element([A|T],S):-
 	S = A.
 
 modifica_dichiarazione_array_loop_2([], _, _,_,_).
+
 %primo elemento
 modifica_dichiarazione_array_loop_2([H|T], Index, Value,Cnt,[H1|T1]):-
 	Cnt == 1,
@@ -376,8 +366,6 @@ modifica_dichiarazione_array_loop_2([H|T], Index, Value,Cnt,[H1|T1]):-
 	Cnt1 is Cnt + 1,
 	modifica_dichiarazione_array_loop_2(T,Index,Value,Cnt1,T1).
 
-
-
 get_second_element([A,B|T],S):-
 	S = B.
 
@@ -386,31 +374,11 @@ get_list_name_from_model([A,B|T],ListName):-
 
 array(String):-substring(String,1,5,"array").
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 % VINCOLO MEMBER
+
+
+
+
 
 
 
