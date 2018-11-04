@@ -250,43 +250,118 @@ remove_last_loop([], [], _).
 remove_last_loop([X1|Xs], [X0|Ys], X0) :-  
    remove_last_loop(Xs, Ys, X1).  
 	
-% VINCOLO ELEMENT
+% VINCOLO ELEMENT TODO da finire
 % qui andrebbe studiato bene come recuperare le variabili della lista, per ora assumo che tra la dichiarazione della lista e il vincolo non siano state dichiarate altre liste
 element(Index,List,Value):-
 	get_lines("model.fzn",Lines),
-	element_loop(Lines, Index, List, Value, LinesModificate),
+	term_string(List,Tmp),
+	substring(Tmp,1,4,_,NomeLista),
+	element_loop(Lines, Index, List, Value, LinesModificate, NomeLista),
 	open("model.fzn", write, stream),
 	write_lines_to_file(stream, LinesModificate),
 	close(stream).
 
-element_loop([],_,_,_,_).
-element_loop([H|T], Index, List, Value, Lm):-
+element_loop([],_,_,_,_,_).
+element_loop([H|T], Index, List, Value, Lm, NomeLista):-
 	not(array(H)),
-	element_loop(T,Index,List,Value,LineaModificata).
-element_loop([H|T],Index,List,Value,Lm):-
+	element_loop(T,Index,List,Value,Lm, NomeLista).
+element_loop([H|T],Index,List,Value,Lm, NomeLista):-
 	array(H),
-	term_string(List,Tmp),
-	substring(Tmp,1,4,_,NomeLista),
-	split_string("array [1..5] of var int: _275:: output_array([1..5])=[X_INTRODUCED_0_,X_INTRODUCED_1_,X_INTRODUCED_2_,X_INTRODUCED_3_,X_INTRODUCED_4_];",":","",SplitList),
-	get_list_name_from_model(SplitList, NomeLista2),
-	NomeLista == NomeLista2.
-	%term_string(L,String),
-	%substring(String,1,4,_,S),
-	%write(stream,S),
+	split_string(H,":","",SplitList),
+	get_list_name_from_model(SplitList, Temp2),
+	split_string(Temp2," ","",SplitList2),
+	get_list_name_from_model(SplitList2, NomeLista2),
+	NomeLista == NomeLista2,
+	modifica_dichiarazione_array(H,Index,Value).
 
-element_loop([H|T],Index,List,Value,Lm):-
+element_loop([H|T],Index,List,Value,Lm, NomeLista):-
 	array(H),
-	term_string(List,Tmp),
-	substring(Tmp,1,4,_,NomeLista),
-	split_string("array [1..5] of var int: _275:: output_array([1..5])=[X_INTRODUCED_0_,X_INTRODUCED_1_,X_INTRODUCED_2_,X_INTRODUCED_3_,X_INTRODUCED_4_];",":","",SplitList),
-	get_list_name_from_model(SplitList, NomeLista2),
+	%term_string(List,Tmp),
+	%substring(Tmp,1,4,_,NomeLista),
+	split_string(H,":","",SplitList),
+	get_list_name_from_model(SplitList, Temp2),
+	split_string(Temp2," ","",SplitList2),
+	get_list_name_from_model(SplitList2, NomeLista2),
 	NomeLista \= NomeLista2,
-	element_loop(T,Index,List,Value,Lm).
+	element_loop(T,Index,List,Value,Lm, NomeLista).
+
+modifica_dichiarazione_array(H,Index,Value):-
+	split_string(H,"=","",L1),
+	get_second_element(L1,S),
+	split_string(S,",","",S1),
+	modifica_dichiarazione_array_loop(S1,Index,Value,1,ListaVariabiliModificata),
+	chiamata_di_prova(ListaVariabiliModificata),
+	write(ListaVariabiliModificata).
+
+chiamata_di_prova(L):-
+	array("array ").
+
+modifica_dichiarazione_array_loop([],_,_,_,_).
+% devo modificare il primo elemento
+modifica_dichiarazione_array_loop([H|T], Index, Value, Cnt, [H1|T1]):-
+	Index == 1,
+	Cnt == 1,
+	number_string(Value,StringValue),
+	string_concat("[", StringValue, Temp),
+	string_concat(Temp,",",Result),
+	H1 = Result,
+	Cnt1 is Cnt + 1,
+	modifica_dichiarazione_array_loop(T,Index,Value,Cnt1,T1).
+% devo modificare l'ultimo elemento
+modifica_dichiarazione_array_loop([T], Index, Value, Cnt, [T1]):-
+	Index == Cnt,
+	number_string(Value,StringValue),
+	string_concat(StringValue, "];" Result),
+	H1 = Result,
+	Cnt1 is Cnt + 1,
+	modifica_dichiarazione_array_loop(T,Index,Value,Cnt1,T1).
+% devo modificare un elemento intermedio
+modifica_dichiarazione_array_loop([H|T], Index, Value, Cnt, [H1|T1]):-
+	Index == Cnt,
+	number_string(Value,StringValue),
+	string_concat(StringValue, "," Result),
+	H1 = Result,
+	Cnt1 is Cnt + 1,
+	modifica_dichiarazione_array_loop(T,Index,Value,Cnt1,T1).
+modifica_dichiarazione_array_loop([H|T], Index, Value, Cnt, [H1|T1]):-
+	Index \= Cnt,
+	Cnt1 is Cnt + 1,
+	H1 = H,
+	modifica_dichiarazione_array_loop(T,Index,Value,Cnt1,T1).
+
+get_second_element([A,B|T],S):-
+	S = B.
 
 get_list_name_from_model([A,B|T],ListName):-
 	ListName = B.
 
 array(String):-substring(String,1,5,"array").
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% VINCOLO MEMBER
 
 
 
