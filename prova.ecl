@@ -1,11 +1,11 @@
 
 :-[libreria].
 %:-lib(fd).
-%:-lib(ic_global).
+%:-lib(fd_global).
 
 prova(L):-
-	length(L,5),
+	length(L,4),
 	L :: 1..5,
-	element(2,L,3),
+	maxlist(L,5),
 	labeling(L).
 

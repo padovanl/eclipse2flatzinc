@@ -1,0 +1,20 @@
+=
+\=
+<
+<=
+>
+>=
+alldifferent
+atleast
+atmost
+occurrences
+element
+maxlist
+
+
+#da fare
+lexiclo_le!!
+minlist,
+sorted,
+sumlist,
+cummulative

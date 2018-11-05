@@ -121,8 +121,6 @@ A #>= B :-
 	printf(stream, ");\n", []),
 	close(stream).
 
-
-
 % VINCOLO ALLDIFFERENT
 alldifferent(L) :-
 	open("model.fzn", append, stream),
@@ -146,7 +144,7 @@ atleast(N,L,V) :-
 	close(stream).
 
 % VINCOLO ATMOST
-atleast(N,L,V) :-
+atmost(N,L,V) :-
 	open("model.fzn", append, stream),
 	printf(stream, "constraint at_most_int(", []),
 	printf(stream, "%d,", [N]),
@@ -249,7 +247,238 @@ remove_last([X|Xs], Ys) :-
 remove_last_loop([], [], _).
 remove_last_loop([X1|Xs], [X0|Ys], X0) :-  
    remove_last_loop(Xs, Ys, X1).  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% VINCOLO MAXLIST
+maxlist(L,V):-
+	length(L,Length),
+	get_var_count(Id),
+	numlist(Id, Id + Length - 2, ListIds),
+	term_string(L,Tmp),
+	substring(Tmp,1,4,_,NomeLista),
+	get_list_variables_id(L,NomeLista,ListVariableId),
+	get_list_dom(V1,V2,ListVariableId),
+	stampa_defined_var_maxlist(ListIds, Length,V1,V2),
+	stampa_maxlist_constraint(ListVariableId,ListIds),
+	ordina_file_fzn.
+
+%TODO
+get_list_dom(V1,V2,ListVariableId):-
+	get_lines("model.fzn",Lines),
+	get_list_dom_loop(Lines,V1,V2,ListVariableId).
+
+get_list_dom_loop([H|T],V1,V2,[H1|T1]):-
+	is_var(H),
+	split_string(H,"_","",SplitList),
+	get_second_last_element(SplitList, Temp2),
+	number_string(H1,Temp1),
+	Temp1 == Temp2,
+	get_dom(H,V1,V2).
+
+get_list_dom_loop([H|T],V1,V2,[H1|T1]):-
+	is_var(H),
+	split_string(H,"_","",SplitList),
+	get_second_last_element(SplitList, Temp2),
+	number_string(H1,Temp1),
+	Temp1 \= Temp2,
+	get_list_dom_loop(T,V1,V2,[H1|T1]).
+
+get_list_dom_loop([H|T],V1,V2,ListVariableId):-
+	not(is_var(H)),
+	get_list_dom_loop(T,V1,V2,ListVariableId).
+
+get_dom(String,V1,V2):-
+	split_string(String,".","",Temp),
+	%recupero estremo inferiore
+	get_first_element(Temp,Temp3),
+	split_string(Temp3," ","",Temp4),
+	get_second_element(Temp4, InfString),
+	number_string(V1,InfString),
+	%recupero estremo superiore
+	split_string(String,"..","",Temp7),
+	get_last_element(Temp7,Temp5),
+	split_string(Temp5,":","",Temp6),
+	get_first_element(Temp6,SupString),
+	number_string(V2,SupString).
 	
+	
+
+
+is_var(String):-substring(String,1,4,"var ").
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+stampa_maxlist_constraint(ListVariableId,ListIds):-
+	open("model.fzn", append, stream),
+	stampa_maxlist_constraint_loop(stream,ListVariableId,ListIds,1),
+	close(stream).
+
+% solo il primo giro
+stampa_maxlist_constraint_loop(_,[],_,_).
+stampa_maxlist_constraint_loop(Stream,[A,B|T],[A1|T1],1):-
+	printf(Stream,"constraint int_max(X_INTRODUCED_%d_,X_INTRODUCED_%d_,X_INTRODUCED_%d_):: defines_var(X_INTRODUCED_%d_);\n", [B,A,A1,A1]),
+	stampa_maxlist_constraint_loop(Stream,T,[A1|T1],2).
+stampa_maxlist_constraint_loop(Stream,[A|T],[A1,B1|T1],2):-
+	printf(Stream,"constraint int_max(X_INTRODUCED_%d_,X_INTRODUCED_%d_,X_INTRODUCED_%d_):: defines_var(X_INTRODUCED_%d_);\n", [A,A1,B1,B1]),
+	stampa_maxlist_constraint_loop(Stream,T,[B1|T1],2).
+
+%TODO sistemare i domini tutti 1..5 tranne ultimo da 5..5
+stampa_defined_var_maxlist(ListIds,Length,V1,V2):-
+	open("model.fzn", append, stream),
+	stampa_defined_var_maxlist_loop(stream, ListIds,Length,V1,V2),
+	close(stream).
+
+stampa_defined_var_maxlist_loop(Stream,[A],N,V1,V2):-
+	printf(Stream,"var %d..%d: X_INTRODUCED_%d_ ::var_is_introduced :: is_defined_var;\n", [V2,V2,A]).
+stampa_defined_var_maxlist_loop(Stream,[A|T],N,V1,V2):-
+	printf(Stream,"var %d..%d: X_INTRODUCED_%d_ ::var_is_introduced :: is_defined_var;\n", [V1,V2,A]),
+	stampa_defined_var_maxlist_loop(Stream,T,N,V1,V2).
+
+get_list_variables_id(List,Nome,ListId):-
+	get_lines("model.fzn", Lines),
+	get_list_variables_id_loop(Lines,Nome,ListId).
+get_list_variables_id_loop([H|T],Nome,ListId):-
+	array(H),
+	split_string(H,":","",SplitList),
+	get_list_name_from_model(SplitList, Temp2),
+	split_string(Temp2," ","",SplitList2),
+	get_list_name_from_model(SplitList2, NomeLista2),
+	Nome == NomeLista2,
+	get_ids(H,ListId).
+
+get_list_variables_id_loop([H|T],Nome,ListId):-
+	not(array(H)),
+	get_list_variables_id_loop(T,Nome,ListId).
+
+get_ids(H,ListId):-
+	split_string(H,"=","",Temp),
+	get_second_element(Temp,Temp2),
+	split_string(Temp2,",","",List),
+	% ottengo il primo indice
+	get_first_element(List,First),
+	get_first_id(First,FirstIdInt),
+	% ottengo l'ultimo indice
+	get_last_element(List,Last),
+	get_last_id(Last,LastIdInt),
+	numlist(FirstIdInt,LastIdInt,ListId).
+
+	
+get_last_id(Last,LInt):-
+	split_string(Last,"_","",List), % List = ["[X","INTRODUCED","N"]
+	get_second_last_element(List,Element),
+	number_string(LInt,Element).
+
+%first = "[X_INTRODUCED_N_"
+get_first_id(First,FInt):-
+	split_string(First,"_","",List), % List = ["[X","INTRODUCED","N"]
+	get_second_last_element(List,Element),
+	number_string(FInt,Element).
+
+get_second_last_element([A,B],E):-
+	E = A.
+get_second_last_element([A|T],E):-
+	get_second_last_element(T,E).
+
+get_last_element([A],E):-
+	E = A.
+get_last_element([A|T],E):-
+	get_last_element(T,E).
+
 % VINCOLO ELEMENT
 % qui andrebbe studiato bene come recuperare le variabili della lista, per ora assumo che tra la dichiarazione della lista e il vincolo non siano state dichiarate altre liste
 element(Index,List,Value):-
@@ -373,35 +602,6 @@ get_list_name_from_model([A,B|T],ListName):-
 	ListName = B.
 
 array(String):-substring(String,1,5,"array").
-
-% VINCOLO MEMBER
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 % LABELING
 labeling(L):-
