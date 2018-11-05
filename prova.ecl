@@ -4,8 +4,8 @@
 %:-lib(fd_global).
 
 prova(L):-
-	length(L,4),
+	length(L,6),
 	L :: 1..5,
-	maxlist(L,5),
+	minlist(L,2),
 	labeling(L).
 

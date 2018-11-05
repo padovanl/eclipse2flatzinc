@@ -248,61 +248,6 @@ remove_last_loop([], [], _).
 remove_last_loop([X1|Xs], [X0|Ys], X0) :-  
    remove_last_loop(Xs, Ys, X1).  
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 % VINCOLO MAXLIST
 maxlist(L,V):-
 	length(L,Length),
@@ -316,7 +261,6 @@ maxlist(L,V):-
 	stampa_maxlist_constraint(ListVariableId,ListIds),
 	ordina_file_fzn.
 
-%TODO
 get_list_dom(V1,V2,ListVariableId):-
 	get_lines("model.fzn",Lines),
 	get_list_dom_loop(Lines,V1,V2,ListVariableId).
@@ -354,54 +298,8 @@ get_dom(String,V1,V2):-
 	split_string(Temp5,":","",Temp6),
 	get_first_element(Temp6,SupString),
 	number_string(V2,SupString).
-	
-	
-
 
 is_var(String):-substring(String,1,4,"var ").
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 stampa_maxlist_constraint(ListVariableId,ListIds):-
 	open("model.fzn", append, stream),
@@ -417,7 +315,6 @@ stampa_maxlist_constraint_loop(Stream,[A|T],[A1,B1|T1],2):-
 	printf(Stream,"constraint int_max(X_INTRODUCED_%d_,X_INTRODUCED_%d_,X_INTRODUCED_%d_):: defines_var(X_INTRODUCED_%d_);\n", [A,A1,B1,B1]),
 	stampa_maxlist_constraint_loop(Stream,T,[B1|T1],2).
 
-%TODO sistemare i domini tutti 1..5 tranne ultimo da 5..5
 stampa_defined_var_maxlist(ListIds,Length,V1,V2):-
 	open("model.fzn", append, stream),
 	stampa_defined_var_maxlist_loop(stream, ListIds,Length,V1,V2),
@@ -478,6 +375,250 @@ get_last_element([A],E):-
 	E = A.
 get_last_element([A|T],E):-
 	get_last_element(T,E).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% VINCOLO MAXLIST
+minlist(L,V):-
+	length(L,Length),
+	get_var_count(Id),
+	numlist(Id, Id + Length - 2, ListIds),
+	term_string(L,Tmp),
+	substring(Tmp,1,4,_,NomeLista),
+	get_list_variables_id(L,NomeLista,ListVariableId),
+	get_list_dom(V1,V2,ListVariableId),
+	stampa_defined_var_minlist(ListIds, Length,V1,V2),
+	stampa_minlist_constraint(ListVariableId,ListIds),
+	ordina_file_fzn.
+
+stampa_minlist_constraint(ListVariableId,ListIds):-
+	open("model.fzn", append, stream),
+	stampa_minlist_constraint_loop(stream,ListVariableId,ListIds,1),
+	close(stream).
+
+% solo il primo giro
+stampa_minlist_constraint_loop(_,[],_,_).
+stampa_minlist_constraint_loop(Stream,[A,B|T],[A1|T1],1):-
+	printf(Stream,"constraint int_min(X_INTRODUCED_%d_,X_INTRODUCED_%d_,X_INTRODUCED_%d_):: defines_var(X_INTRODUCED_%d_);\n", [B,A,A1,A1]),
+	stampa_minlist_constraint_loop(Stream,T,[A1|T1],2).
+stampa_minlist_constraint_loop(Stream,[A|T],[A1,B1|T1],2):-
+	printf(Stream,"constraint int_min(X_INTRODUCED_%d_,X_INTRODUCED_%d_,X_INTRODUCED_%d_):: defines_var(X_INTRODUCED_%d_);\n", [A,A1,B1,B1]),
+	stampa_minlist_constraint_loop(Stream,T,[B1|T1],2).
+
+stampa_defined_var_minlist(ListIds,Length,V1,V2):-
+	open("model.fzn", append, stream),
+	stampa_defined_var_minlist_loop(stream, ListIds,Length,V1,V2),
+	close(stream).
+
+stampa_defined_var_minlist_loop(Stream,[A],N,V1,V2):-
+	printf(Stream,"var %d..%d: X_INTRODUCED_%d_ ::var_is_introduced :: is_defined_var;\n", [V2,V2,A]).
+stampa_defined_var_minlist_loop(Stream,[A|T],N,V1,V2):-
+	printf(Stream,"var %d..%d: X_INTRODUCED_%d_ ::var_is_introduced :: is_defined_var;\n", [V1,V2,A]),
+	stampa_defined_var_minlist_loop(Stream,T,N,V1,V2).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 % VINCOLO ELEMENT
 % qui andrebbe studiato bene come recuperare le variabili della lista, per ora assumo che tra la dichiarazione della lista e il vincolo non siano state dichiarate altre liste
