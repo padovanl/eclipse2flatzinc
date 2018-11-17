@@ -20,7 +20,7 @@ fzn_run("model.fzn",fzn_ic).
 ## Vincoli supportati
 La libreria supporta i principali vincoli affrontati a lezione delle librerie fd e fd_global:
 - =
-- \=
+- \\=
 - <
 - <=
 - \>
