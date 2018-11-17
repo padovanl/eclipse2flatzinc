@@ -23,8 +23,8 @@ La libreria supporta i principali vincoli affrontati a lezione delle librerie fd
 - \=
 - <
 - <=
-- >
-- >=
+- \>
+- \>=
 - alldifferent
 - atleast
 - atmost
