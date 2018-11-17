@@ -15,6 +15,5 @@ sorted (ma non funziona, neanche convertito da minizinc)
 
 #da fare
 lexiclo_le
-
 sumlist,
 cummulative
