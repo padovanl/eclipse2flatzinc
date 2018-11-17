@@ -10,11 +10,11 @@ atmost
 occurrences
 element
 maxlist
-
+minlist
+sorted (ma non funziona, neanche convertito da minizinc)
 
 #da fare
-lexiclo_le!!
-minlist,
-sorted,
+lexiclo_le
+
 sumlist,
 cummulative
