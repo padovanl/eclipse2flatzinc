@@ -17,6 +17,9 @@ e successivamente lanciando il solver tramite:
 fzn_run("model.fzn",fzn_ic).
 ```
 
+## Requisiti
+Per motivi implementativi, e per far funzionare bene la libreria, occorre che tra la definizione della variabile e l'uso del vincolo non siano dichiarate altra variabili. 
+
 ## Vincoli supportati
 La libreria supporta i principali vincoli affrontati a lezione delle librerie fd e fd_global:
 - =
