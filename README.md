@@ -16,3 +16,20 @@ e successivamente lanciando il solver tramite:
 ```
 fzn_run("model.fzn",fzn_ic).
 ```
+
+##Vincoli supportati
+La libreria supporta i principali vincoli affrontati a lezione delle librerie fd e fd_global:
+- =
+- \=
+- <
+- <=
+- >
+- >=
+- alldifferent
+- atleast
+- atmost
+- occurrences
+- element
+- maxlist
+- minlist
+- sorted (ma non funziona, neanche convertito da minizinc)
