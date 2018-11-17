@@ -17,7 +17,7 @@ e successivamente lanciando il solver tramite:
 fzn_run("model.fzn",fzn_ic).
 ```
 
-##Vincoli supportati
+## Vincoli supportati
 La libreria supporta i principali vincoli affrontati a lezione delle librerie fd e fd_global:
 - =
 - \=
