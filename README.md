@@ -27,11 +27,11 @@ nome_vincolo.ecl
 ```
 Una volta caricato il file tramite il comando
 ```
-:-[nome_vincolo]
+:-[nome_vincolo].
 ```
 in Tkeclipse digitare:
 ```
-sample.
+nome_predicato.
 ```
 per convertire il codice nel rispettivo modello flatzinc.
 
