@@ -11,9 +11,11 @@ occurrences
 element
 maxlist
 minlist
+sumlist
 sorted (ma non funziona, neanche convertito da minizinc)
 
 #da fare
 lexiclo_le
-sumlist,
 cummulative
+flatten
+minimize
