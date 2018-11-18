@@ -710,7 +710,32 @@ print_defined_var_lexico(Stream,[H|T]):-
 labeling(L):-
 	open("model.fzn", append, stream),
 	write(stream, "solve satisfy;\n"),
-	close(stream).
+	close(stream),
+	%elimino file temporanei
+	delete_temp_files.
+
+delete_temp_files:-
+	delete_const_file,
+	delete_temp_file,
+	delete_var_file.
+
+delete_const_file:-
+	exists("model.const"),
+	delete("model.const").
+delete_const_file:-
+	not(exists("model.const")).
+
+delete_temp_file:-
+	exists("model.temp"),
+	delete("model.temp").
+delete_temp_file:-
+	not(exists("model.temp")).
+
+delete_var_file:-
+	exists("model.var"),
+	delete("model.var").
+delete_var_file:-
+	not(exists("model.var")).
 
 % stampa la dichiarazione delle variabili di una lista
 print_all([], _, _).
