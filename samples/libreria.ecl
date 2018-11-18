@@ -591,11 +591,151 @@ print_list_of_ones(Stream,Length):-
 	Length1 is Length - 1,
 	print_list_of_ones(Stream,Length1).
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% VINCOLO LEXICO_LE (lexico_le([1,2,3],L).)
+lexico_le(L1,L2):-
+	get_var_count(NextValue),
+	length(L2,ListLength),
+	numlist(NextValue, NextValue + ListLength * 2 - 1, ListIds),
+	open("model.fzn",append,stream),
+	print_defined_var_lexico(stream,ListIds),
+	%print_constraint_lexico(stream),
+	close(stream),
+	ordina_file_fzn.
+
+print_defined_var_lexico(_,[]).
+print_defined_var_lexico(Stream,[H|T]):-
+	printf(Stream,"var bool: X_INTRODUCED_%d_ ::var_is_introduced :: is_defined_var;\n",[H]),
+	print_defined_var_lexico(Stream,T).
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 % LABELING
 labeling(L):-
 	open("model.fzn", append, stream),
 	write(stream, "solve satisfy;\n"),
-	close(stream).
+	close(stream),
+	%elimino file temporanei
+	delete_temp_files.
+
+delete_temp_files:-
+	delete_const_file,
+	delete_temp_file,
+	delete_var_file.
+
+delete_const_file:-
+	exists("model.const"),
+	delete("model.const").
+delete_const_file:-
+	not(exists("model.const")).
+
+delete_temp_file:-
+	exists("model.temp"),
+	delete("model.temp").
+delete_temp_file:-
+	not(exists("model.temp")).
+
+delete_var_file:-
+	exists("model.var"),
+	delete("model.var").
+delete_var_file:-
+	not(exists("model.var")).
 
 % stampa la dichiarazione delle variabili di una lista
 print_all([], _, _).
