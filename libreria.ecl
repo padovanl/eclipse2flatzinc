@@ -560,6 +560,37 @@ print_list_to_string(Stream,[H|T]):-
 	printf(Stream,"%d,",[H]),
 	print_list_to_string(Stream,T).
 
+% VINCOLO SUMLIST
+sumlist(List,Sum):-
+	term_string(List,Tmp),
+	substring(Tmp,1,4,_,NomeLista),
+	get_list_variables_id(L,NomeLista,ListVariableId),
+	get_list_dom(V1,V2,ListVariableId),
+	get_var_count(NextValue),
+	open("model.fzn",append,stream),
+	printf(stream,"constraint int_lin_eq(X_INTRODUCED_%d_,[",[NextValue]),
+	print_list_definition(ListVariableId,stream),
+	printf(stream,"],%d);\n",[Sum]),
+	length(List,ListLength),
+	printf(stream,"array [1..%d] of int: X_INTRODUCED_%d_ = [",[ListLength,NextValue]),
+	print_list_of_ones(stream,ListLength),
+	printf(stream,"];\n",[]),
+	close(stream),
+	ordina_file_fzn.
+	
+print_list_definition([T],Stream):-
+	printf(Stream,"X_INTRODUCED_%d_",[T]).
+print_list_definition([H|T],Stream):-
+	printf(Stream,"X_INTRODUCED_%d_,",[H]),
+	print_list_definition(T,Stream).
+
+print_list_of_ones(Stream,1):-
+	printf(Stream,"1",[]).
+print_list_of_ones(Stream,Length):-
+	printf(Stream,"1,",[]),
+	Length1 is Length - 1,
+	print_list_of_ones(Stream,Length1).
+
 % LABELING
 labeling(L):-
 	open("model.fzn", append, stream),

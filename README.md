@@ -50,12 +50,12 @@ La libreria supporta i principali vincoli affrontati a lezione delle librerie fd
 - element
 - maxlist
 - minlist
+- sumlist
 - sorted (ma non funziona, neanche convertito da minizinc)
 
 ## Vincoli non ancora supportati
 La libreria al momento non supporta ancora i seguenti vincoli:
 - lexico_le
 - flatten
-- sumlist
 - cumulative
 - minimize
