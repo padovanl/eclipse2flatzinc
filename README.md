@@ -56,4 +56,3 @@ La libreria supporta i principali vincoli affrontati a lezione delle librerie fd
 ## Vincoli non ancora supportati
 La libreria al momento non supporta ancora i seguenti vincoli:
 - lexico_le
-- minimize
