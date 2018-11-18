@@ -2,6 +2,9 @@
 :-lib(var_name).
 :-lib(lists).
 
+% Libreria che traduce i vincoli di un programma che usa la libreria fd in flatzinc.
+% Per ulteriori informazioni leggere il file README.md
+
 
 % DOMINIO
 A :: N1..N2 :-
