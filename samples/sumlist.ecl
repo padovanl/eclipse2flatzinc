@@ -1,9 +1,9 @@
 :-[libreria].
 
 sumlist_sample:-
-	length(L,5),
-	L :: 1..5,
-	%la somma degli elementi della lista L e' 25
-	sumlist(L,25),
+	length(L,10),
+	L :: 1..10,
+	%la somma degli elementi della lista L e' 50
+	sumlist(L,50),
 	labeling(L).
 

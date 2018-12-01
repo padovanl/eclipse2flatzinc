@@ -1,9 +1,9 @@
 :-[libreria].
 
 maxlist_sample:-
-	length(L,5),
-	L :: 1..5,
-	%5 e' il valore massimo della lista
-	maxlist(L,5),
+	length(L,10),
+	L :: 1..7,
+	%6 e' il valore massimo della lista
+	maxlist(L,6),
 	labeling(L).
 

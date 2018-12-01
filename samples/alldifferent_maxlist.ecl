@@ -1,9 +1,9 @@
 :-[libreria].
 
 alldifferent_maxlist_sample:-
-	length(L,3),
-	L :: 1..5,
+	length(L,10),
+	L :: 1..25,
 	alldifferent(L),
-	maxlist(L,5),
+	maxlist(L,25),
 	labeling(L).
 
