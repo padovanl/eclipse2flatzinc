@@ -9,3 +9,10 @@ var bool: X_INTRODUCED_6_ ::var_is_introduced :: is_defined_var;
 var bool: X_INTRODUCED_7_ ::var_is_introduced :: is_defined_var;
 var bool: X_INTRODUCED_8_ ::var_is_introduced :: is_defined_var;
 solve satisfy;
+var 1..5:  X_INTRODUCED_3_;
+var 1..5:  X_INTRODUCED_4_;
+var 1..5:  X_INTRODUCED_5_;
+var 1..5:  X_INTRODUCED_6_;
+var 1..5:  X_INTRODUCED_7_;
+array [1..5] of var int: _268:: output_array([1..5])=[X_INTRODUCED_3_,X_INTRODUCED_4_,X_INTRODUCED_5_,X_INTRODUCED_6_,X_INTRODUCED_7_];
+X_INTRODUCED_7_,
