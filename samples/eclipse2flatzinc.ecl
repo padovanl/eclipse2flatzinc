@@ -577,6 +577,8 @@ print_list_to_string(Stream,[H|T]):-
 
 % VINCOLO SUMLIST
 sumlist(List,Sum):-
+	%se Sum e' un numero
+	number(Sum),
 	term_string(List,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
 	get_list_variables_id(L,NomeLista,ListVariableId),
@@ -592,6 +594,42 @@ sumlist(List,Sum):-
 	printf(stream,"];\n",[]),
 	close(stream),
 	ordina_file_fzn.
+
+% se Sum non e' un numero, probabilmente lo uso come minimizzatore
+sumlist(List,Sum):-
+	%se Sum e' un numero
+	not(number(Sum)),
+	term_string(List,Tmp),
+	substring(Tmp,1,4,_,NomeLista),
+	get_list_variables_id(L,NomeLista,ListVariableId),
+	get_list_dom(V1,V2,ListVariableId),
+	get_var_count(NextValue),
+	open("model.fzn",append,stream),
+	length(List,Length),
+	stampa_defined_var_sumlist(NextValue, stream, Length,ListVariableId),
+	stampa_constraint_sumlist(Length,ListVariableId, stream, NextValue),
+	close(stream),
+	ordina_file_fzn.
+
+stampa_defined_var_sumlist(Next,Stream,Length,ListVariableId):-
+	get_list_dom(V1,V2,ListVariableId),
+	get_min_sum(V1,Min,Length),
+	get_max_sum(V2,Max,Length),
+	printf(Stream,"var %d..%d: X_INTRODUCED_%d_ :: is_defined_var;\n",[Min,Max,Next]).
+
+get_min_sum(V,Min,Length):-
+	Min is V * Length.
+get_max_sum(V,Max,Length):-
+	Max is V * Length.
+
+stampa_constraint_sumlist(Length,ListId,Stream,Next):-
+	printf(Stream,"constraint int_lin_eq([",[]),
+	print_list_of_ones_2(Stream,Length),
+	printf(Stream,"[",[]),
+	print_list_definition(ListId,Stream),
+	printf(Stream,",X_INTRODUCED_%d_",[Next]),
+	printf(Stream,"],0) :: defines_var(X_INTRODUCED_%d_);\n",[Next]).
+	
 	
 print_list_definition([T],Stream):-
 	printf(Stream,"X_INTRODUCED_%d_",[T]).
@@ -605,6 +643,13 @@ print_list_of_ones(Stream,Length):-
 	printf(Stream,"1,",[]),
 	Length1 is Length - 1,
 	print_list_of_ones(Stream,Length1).
+
+print_list_of_ones_2(Stream,1):-
+	printf(Stream,"1, -1],",[]).
+print_list_of_ones_2(Stream,Length):-
+	printf(Stream,"1,",[]),
+	Length1 is Length - 1,
+	print_list_of_ones_2(Stream,Length1).
 
 
 
@@ -718,8 +763,16 @@ print_defined_var_lexico(Stream,[H|T]):-
 
 
 
-
-
+% MINIMIZE
+minimize(labeling(L),C):-
+	% al momento non devono essere stati implementati altri vincoli prima di questa istruzione. Testato con sumlist
+	open("model.fzn", append, stream),
+	get_var_count(Next),
+	Next1 is Next - 1,
+	printf(stream,"solve  minimize X_INTRODUCED_%d_;",[Next1]),
+	close(stream),
+	%elimino file temporanei
+	delete_temp_files.
 
 % LABELING
 labeling(L):-
