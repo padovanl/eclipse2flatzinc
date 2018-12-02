@@ -3,7 +3,7 @@
 occurrences_sample:-
 	length(L,5),
 	L :: 1..5,
-	%element 2 is in L 3 times
-	occurrences(2,L,3),
+	%element 5 is in L 2 times
+	occurrences(5,L,2),
 	labeling(L).
 

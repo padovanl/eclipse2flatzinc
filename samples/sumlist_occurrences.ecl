@@ -1,6 +1,6 @@
 :-[eclipse2flatzinc].
 
-sumlist_sample:-
+sumlist_occurrences_sample:-
 	length(L,5),
 	L :: 1..5,
 	sumlist(L,10),
