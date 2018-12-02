@@ -63,6 +63,7 @@ La libreria supporta i principali vincoli affrontati a lezione delle librerie fd
 - minlist
 - sumlist
 - sorted (ma non funziona, neanche convertito da minizinc)
+- minimize (con alcune limitazioni)
 
 ## Vincoli non ancora supportati
 La libreria al momento non supporta ancora i seguenti vincoli:
