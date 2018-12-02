@@ -1,4 +1,4 @@
-:-[libreria].
+:-[eclipse2flatzinc].
 
 greater_then:-
 	A :: 1..5,

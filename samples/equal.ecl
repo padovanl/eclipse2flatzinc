@@ -1,4 +1,4 @@
-:-[libreria].
+:-[eclipse2flatzinc].
 
 equal:-
 	A :: 1..5,

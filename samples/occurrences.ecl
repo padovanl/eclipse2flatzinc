@@ -1,4 +1,4 @@
-:-[libreria].
+:-[eclipse2flatzinc].
 
 occurrences_sample:-
 	length(L,5),

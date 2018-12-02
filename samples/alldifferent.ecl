@@ -1,4 +1,4 @@
-:-[libreria].
+:-[eclipse2flatzinc].
 
 alldifferent_sample:-
 	length(L,5),

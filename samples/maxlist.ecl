@@ -1,4 +1,4 @@
-:-[libreria].
+:-[eclipse2flatzinc].
 
 maxlist_sample:-
 	length(L,10),

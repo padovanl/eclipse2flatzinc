@@ -16,7 +16,7 @@ Per utilizzare la libreria, sustituire sul file .ecl o .pl di cui si vogliono tr
 ```
 con:
 ```
-:-[libreria].
+:-[eclipse2flatzinc].
 ```
 Al termine dell'esecuzione, il modello flatzinc corrispondente viene creato nel file model.fzn. Questo modello può essere eseguito da un terminale ECLiPSe caricando la libreria flatzinc con il comando:
 ```
@@ -42,7 +42,7 @@ Una volta caricato il file tramite il comando
 ```
 in Tkeclipse digitare:
 ```
-nome_predicato.
+nome_predicato_sample.
 ```
 per convertire il codice nel rispettivo modello flatzinc.
 

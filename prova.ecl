@@ -1,5 +1,5 @@
 
-:-[libreria].
+:-[eclipse2flatzinc].
 %:-lib(fd).
 %:-lib(fd_global).
 
