@@ -240,7 +240,7 @@ stampa_occurrences_constraint_loop(_,_,[],_,_).
 stampa_occurrences_constraint_loop(Stream,Length,[H|T], Offset,N):-
 	printf(Stream,"constraint int_eq_reif(X_INTRODUCED_%d_,", [H]),
 	printf(Stream,"%d,",[N]),
-	Temp is H + Offset + 1,
+	Temp is H + Offset + 1, % TODO da sistemare
 	printf(Stream,"X_INTRODUCED_%d_):: ", [Temp]),
 	printf(Stream,"defines_var(X_INTRODUCED_%d_);\n", [Temp]),
 	Offset1 is Offset + 1,
