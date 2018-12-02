@@ -164,7 +164,7 @@ occurrences(V,L,N):-
 	get_var_count(Id),
 	numlist(Id, Id + Length * 2, ListIds),
 	stampa_defined_var(ListIds, Length), 
-	stampa_occurrences_constraint(Length,V),
+	stampa_occurrences_constraint(Length,V,L),
 	stampa_occurrences_bool2int(ListIds),
 	stampa_occurrences_global(ListIds,N),
 	ordina_file_fzn.
@@ -224,12 +224,15 @@ print_list(Stream,[H|T]):-
 
 % TODO stampa_occurrences_constraint
 % qui andrebbe studiato bene come recuperare le variabili della lista, per ora assumo che tra la dichiarazione della lista e il vincolo non siano state dichiarate altre liste
-stampa_occurrences_constraint(Length,N):-
+stampa_occurrences_constraint(Length,N,L):-
 	open("model.fzn", append, stream),
-	get_var_count(NextId),
-	Start is NextId - Length,
-	End is Length - 1,
-	numlist(Start, End, ListIds),
+	%get_var_count(NextId),
+	%Start is NextId - Length,
+	%End is Length - 1,
+	%numlist(Start, End, ListIds),
+	term_string(L,Tmp),
+	substring(Tmp,1,4,_,NomeLista),
+	get_list_variables_id(L,NomeLista,ListIds),
 	stampa_occurrences_constraint_loop(stream, Length, ListIds, Length,N),
 	close(stream).
 
@@ -237,7 +240,7 @@ stampa_occurrences_constraint_loop(_,_,[],_,_).
 stampa_occurrences_constraint_loop(Stream,Length,[H|T], Offset,N):-
 	printf(Stream,"constraint int_eq_reif(X_INTRODUCED_%d_,", [H]),
 	printf(Stream,"%d,",[N]),
-	Temp is H + Offset,
+	Temp is H + Offset + 1,
 	printf(Stream,"X_INTRODUCED_%d_):: ", [Temp]),
 	printf(Stream,"defines_var(X_INTRODUCED_%d_);\n", [Temp]),
 	Offset1 is Offset + 1,
@@ -340,6 +343,15 @@ get_list_variables_id_loop([H|T],Nome,ListId):-
 	get_list_name_from_model(SplitList2, NomeLista2),
 	Nome == NomeLista2,
 	get_ids(H,ListId).
+
+get_list_variables_id_loop([H|T],Nome,ListId):-
+	array(H),
+	split_string(H,":","",SplitList),
+	get_list_name_from_model(SplitList, Temp2),
+	split_string(Temp2," ","",SplitList2),
+	get_list_name_from_model(SplitList2, NomeLista2),
+	Nome \= NomeLista2,
+	get_list_variables_id_loop(T,Nome,ListId).
 
 get_list_variables_id_loop([H|T],Nome,ListId):-
 	not(array(H)),
@@ -720,7 +732,14 @@ labeling(L):-
 delete_temp_files:-
 	delete_const_file,
 	delete_temp_file,
-	delete_var_file.
+	delete_var_file,
+	delete_array_file.
+
+delete_array_file:-
+	exists("model.array"),
+	delete("model.array").
+delete_array_file:-
+	not(exists("model.array")).
 
 delete_const_file:-
 	exists("model.const"),
@@ -801,7 +820,9 @@ stampa_resto([H|T], StreamOut):-
 	stampa_resto(T, StreamOut).
 
 variabili(String):-substring(String,1,4,"var ").
-variabili(String):-substring(String,1,5,"array").
+variabili(String):-
+	split_string(String," ","",SplitList),
+	is_array_variable(SplitList,1).
 
 copia_file:-
 	get_lines("model.temp", Lines),
@@ -847,14 +868,40 @@ trova_ultima_dichiarazione_loop([A,B|T],Ultima):-
 	defined_var(B),
 	trova_ultima_dichiarazione_loop([B|T],Ultima).
 
+
 trova_ultima_dichiarazione_loop([A,B|T],Ultima):-
 	defined_var(A),
 	not(defined_var(B)),
 	Ultima = A.
+
+trova_ultima_dichiarazione_loop([A],Ultima):-
+	defined_var(A),
+	Ultima = A.
+
 trova_ultima_dichiarazione_loop([],Ultima):-
 	Ultima = "-1".
 
 defined_var(String):-substring(String,1,4,"var ").
+defined_var(String):-
+	split_string(String," ","",SplitList), %se definisce una variabile al quarto elemento trovo "int"
+	is_array_variable(SplitList,1).
+
+is_array_variable([H|T],4):- !,
+	H == "int:".
+
+is_array_variable([H|T],Cnt):-
+	Cnt1 is Cnt + 1,
+	is_array_variable(T,Cnt1).
+
+is_array_from_eclipse([H|T],4):-
+	H == "var".
+
+is_array_from_eclipse([H|T],Cnt):-
+	Cnt1 is Cnt + 1,
+	is_array_from_eclipse(T,Cnt1).
+	
+	
+
 
 ordina_file_fzn:-
 	get_lines("model.fzn",LinesFzn),
@@ -864,27 +911,39 @@ ordina_file_fzn:-
 split_lines_to_file(Lines):-
 	open("model.var", write, streamVar),
 	open("model.const", write, streamConst),
-	split_lines_to_file_loop(Lines, streamVar, streamConst),
+	open("model.array", write, streamArray),
+	split_lines_to_file_loop(Lines, streamVar, streamConst, streamArray),
 	close(streamVar),
-	close(streamConst).
+	close(streamConst),
+	close(streamArray).
 
-split_lines_to_file_loop([],_,_).
-split_lines_to_file_loop([H|T], StreamVar, StreamConst):-
-	decision(H, StreamVar, StreamConst),
-	split_lines_to_file_loop(T, StreamVar, StreamConst).
+split_lines_to_file_loop([],_,_,_).
+split_lines_to_file_loop([H|T], StreamVar, StreamConst, StreamArray):-
+	decision(H, StreamVar, StreamConst, StreamArray),
+	split_lines_to_file_loop(T, StreamVar, StreamConst, StreamArray).
 
-decision(H, StreamVar, StreamConst):-
+decision(H, StreamVar, StreamConst, StreamArray):-
 	variabili(H),
 	printf(StreamVar,"%s\n",[H]).
-decision(H, StreamVar, StreamConst):-
-	not(variabili(H)),
+decision(H, StreamVar, StreamConst,StreamArray):-
+	split_string(H," ","",SplitList),
+	is_array_from_eclipse(SplitList,1),
+	printf(StreamArray,"%s\n",[H]).
+decision(H, StreamVar, StreamConst,StreamArray):-
+	split_string(H," ","",SplitList),
+	is_constraint(SplitList),
 	printf(StreamConst,"%s\n",[H]).
+
+is_constraint([H|T]):-
+	H == "constraint".
 
 merge_files:-
 	get_lines("model.var",LinesVar),
 	get_lines("model.const",LinesConst),
+	get_lines("model.array",LinesArray),
 	open("model.fzn",write,streamFzn),
 	write_lines_to_file(streamFzn, LinesVar),
+	write_lines_to_file(streamFzn, LinesArray),
 	write_lines_to_file(streamFzn, LinesConst),
 	close(streamFzn).
 
