@@ -68,3 +68,10 @@ La libreria supporta i principali vincoli affrontati a lezione delle librerie fd
 ## Vincoli non ancora supportati
 La libreria al momento non supporta ancora i seguenti vincoli:
 - lexico_le
+
+### Limitazioni e problemi noti
+- Il vincolo sorted, seppur implementato correttamente, non funziona. Per sicurezza ho svolto un controllo incrociato con un file .fzn convertito da un file .mzn con l'istruzione mzn2fzn:
+```
+mzn2fzn(mymodel, [], zn_options{solver:fzn_ic,fzn_tmp:file}, FznFile).
+```
+- Al momento minimize funziona soltanto con il vincolo sumlist.
