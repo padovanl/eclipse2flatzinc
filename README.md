@@ -4,7 +4,7 @@
 > FlatZinc is the target constraint modelling language into which MiniZinc models are translated.  It
 is a very simple solver independent problem specification language, requiring minimal implementation effort to support.
 
-Lo scopo di questa libreria è di effettuare la traduzioni dei vincoli utilizzati da un programma che usa la libreria fd in un modello flatzinc. Anche se inizialmente lo scopo era di tradurre i vincoli della libreria fd, successivamente ho aggiunto alcuni semplici vincoli della libreria fd_global che operano con le liste.
+Lo scopo di questa libreria è di effettuare la traduzione dei vincoli utilizzati da un programma che usa la libreria fd in un modello flatzinc. Anche se inizialmente lo scopo era di tradurre i vincoli della libreria fd, successivamente ho aggiunto alcuni semplici vincoli della libreria fd_global che operano con le liste.
 
 Per approfondire la conoscenza con flatzinc, è possibile consultare le [Specifiche di flatzinc](https://www.minizinc.org/downloads/doc-1.3/flatzinc-spec.pdf).
 
