@@ -26,10 +26,7 @@ e successivamente lanciando il solver tramite:
 ```
 fzn_run("model.fzn",fzn_ic).
 ```
-**Nota** Prima di procedere ad effettuare una nuova traduzione, occorre eliminare il file model.fzn eventualmente creato precedentemente.
-
-## Requisiti
-Per motivi implementativi occorre che tra la definizione della variabile e l'uso del vincolo non siano dichiarate altre variabili. 
+**Nota** Prima di procedere ad effettuare una nuova traduzione, occorre eliminare il file model.fzn eventualmente creato precedentemente. 
 
 ## Esempi
 Nella cartella samples sono disponibili esempi pronti per essere convertiti in flatzinc. I file prendono il nome secondo la regola:
