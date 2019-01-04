@@ -1,8 +1,0 @@
-var 1..5:  X_INTRODUCED_0_;
-var 1..5:  X_INTRODUCED_1_;
-var 1..5:  X_INTRODUCED_2_;
-var 1..5:  X_INTRODUCED_3_;
-var 1..5:  X_INTRODUCED_4_;
-array [1..5] of var int: _160:: output_array([1..5])=[X_INTRODUCED_0_,X_INTRODUCED_1_,X_INTRODUCED_2_,X_INTRODUCED_3_,X_INTRODUCED_4_];
-constraint all_different_int(_160);
-solve satisfy;
