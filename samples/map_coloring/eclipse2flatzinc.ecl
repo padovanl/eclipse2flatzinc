@@ -28,7 +28,7 @@ L :: N1..N2 :-
 	numlist(NextInt, NextInt + N - 1, ListTemp),
 	print_all(ListTemp, N, N2),
 	printf(stream, "array [1..%d] of var int: ", [N]),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(L,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
@@ -74,6 +74,58 @@ A #= B :-
 	printf(stream, ");\n", []),
 	close(stream).
 
+% A + B #= Valore
+%A + B #= V :-
+%	atomic(V),
+%	compound(A),
+%	compound(B),
+%	open("model.fzn", append, stream),
+%	printf(stream,"array [1..2] of int: X_INTRODUCED_0_ = [",[]),
+%	print_list_of_ones(stream,2),
+%	printf(stream, "];\n",[]),
+%	printf(stream, "constraint int_lin_eq(X_INTRODUCED_0_,[", []),
+%	write(stream, "V"),
+%	term_string(A,String),
+%	substring(String,1,4,_,S),
+%	write(stream,S),
+%	write(stream, ","),
+%	write(stream, "V"),
+%	term_string(B,String2),
+%	substring(String2,1,4,_,S2),
+%	write(stream,S2),
+%	printf(stream, "],%d);\n", [V]),
+%	close(stream).
+
+% A + B #= C
+%A + B #= C :-
+%	compound(C),
+%	compound(A),
+%	compound(B),
+%	open("model.fzn", append, stream),
+%	printf(stream,"array [1..3] of int: X_INTRODUCED_0_ = [",[]),
+%	print_list_of_ones(stream,2),
+%	printf(stream, ",-1];\n",[]),
+%	printf(stream, "constraint int_lin_eq(X_INTRODUCED_0_,[", []),
+%	write(stream, "V"),
+%	term_string(A,String),
+%	substring(String,1,4,_,S),
+%	write(stream,S),
+%	write(stream, ","),
+%	write(stream, "V"),
+%	term_string(B,String2),
+%	substring(String2,1,4,_,S2),
+%	write(stream,S2),
+%	write(stream, ",V"),
+%	term_string(C,String3),
+%	substring(String3,1,4,_,S3),
+%	write(stream,S3),
+%	printf(stream, "],", []),
+%	printf(stream,"0);\n",[]),
+%	close(stream).
+
+
+
+
 % VINCOLO DI DISUGUAGLIANZA
 % notazione infissa
 % A #\= B
@@ -114,6 +166,103 @@ A #\= B :-
 	printf(stream, ");\n", []),
 	close(stream).
 
+% A + B #< Valore
+A + B #< V :-
+	atomic(V),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..2] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones(stream,2),
+	printf(stream, "];\n",[]),
+	printf(stream, "constraint int_lin_lt(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	printf(stream, "],%d);\n", [V]),
+	close(stream).
+
+% A - B #< Valore
+A - B #< V :-
+	atomic(V),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..2] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones_modified(stream,2),
+	printf(stream, "];\n",[]),
+	printf(stream, "constraint int_lin_lt(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	printf(stream, "],%d);\n", [V]),
+	close(stream).
+
+% A - B #< C
+A - B #< C :-
+	compound(C),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..3] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones_modified(stream,2),
+	printf(stream, ",-1];\n",[]),
+	printf(stream, "constraint int_lin_lt(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	write(stream, ",V"),
+	term_string(C,String3),
+	substring(String3,1,4,_,S3),
+	write(stream,S3),
+	printf(stream, "],", []),
+	printf(stream,"0);\n",[]),
+	close(stream).
+
+% A + B #< C
+A + B #< C :-
+	compound(C),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..3] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones(stream,2),
+	printf(stream, ",-1];\n",[]),
+	printf(stream, "constraint int_lin_lt(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	write(stream, ",V"),
+	term_string(C,String3),
+	substring(String3,1,4,_,S3),
+	write(stream,S3),
+	printf(stream, "],", []),
+	printf(stream,"0);\n",[]),
+	close(stream).
 
 
 
@@ -124,23 +273,28 @@ A #\= B :-
 
 
 
-%A + B #< V :-
-%	open("model.fzn", append, stream),
-%	%get_var_count(Id),
-%	printf(stream,"array [1..2] of int: X_INTRODUCED_0_ = [",[]),
-%	print_list_of_ones(stream,2),
-%	printf(stream, "];\n",[]),
-%	printf(stream, "constraint int_lin_le(X_INTRODUCED_0_,[", []),
-%	%constraint int_lin_le(X_INTRODUCED_0_,[X,Y],4);
-%	term_string(A,String),
-%	substring(String,1,4,_,S),
-%	write(stream,S),
-%	write(stream, ","),
-%	term_string(B,String2),
-%	substring(String2,1,4,_,S2),
-%	write(stream,S2),
-%	printf(stream, "],%d);\n", [V]),
-%	close(stream).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -359,7 +513,7 @@ A #>= B :-
 alldifferent(L) :-
 	open("model.fzn", append, stream),
 	printf(stream, "constraint all_different_int(", []),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(L,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
@@ -371,7 +525,7 @@ atleast(N,L,V) :-
 	open("model.fzn", append, stream),
 	printf(stream, "constraint at_least_int(", []),
 	printf(stream, "%d,", [N]),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(L,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
@@ -384,7 +538,7 @@ atmost(N,L,V) :-
 	open("model.fzn", append, stream),
 	printf(stream, "constraint at_most_int(", []),
 	printf(stream, "%d,", [N]),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(L,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
@@ -464,7 +618,7 @@ stampa_occurrences_constraint(Length,N,L):-
 	%Start is NextId - Length,
 	%End is Length - 1,
 	%numlist(Start, End, ListIds),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(L,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
 	get_list_variables_id(L,NomeLista,ListIds),
@@ -475,7 +629,7 @@ stampa_occurrences_constraint_loop(_,_,[],_,_).
 stampa_occurrences_constraint_loop(Stream,Length,[H|T], Offset,N):-
 	printf(Stream,"constraint int_eq_reif(X_INTRODUCED_%d_,", [H]),
 	printf(Stream,"%d,",[N]),
-	Temp is H + Offset + 1, % TODO da sistemare
+	Temp is H + Offset + 1, 
 	printf(Stream,"X_INTRODUCED_%d_):: ", [Temp]),
 	printf(Stream,"defines_var(X_INTRODUCED_%d_);\n", [Temp]),
 	Offset1 is Offset + 1,
@@ -494,7 +648,7 @@ maxlist(L,_):-
 	length(L,Length),
 	get_var_count(Id),
 	numlist(Id, Id + Length - 2, ListIds),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(L,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
 	get_list_variables_id(L,NomeLista,ListVariableId),
@@ -632,7 +786,7 @@ minlist(L,_):-
 	length(L,Length),
 	get_var_count(Id),
 	numlist(Id, Id + Length - 2, ListIds),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(L,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
 	get_list_variables_id(L,NomeLista,ListVariableId),
@@ -670,7 +824,7 @@ stampa_defined_var_minlist_loop(Stream,[A|T],N,V1,V2):-
 % qui andrebbe studiato bene come recuperare le variabili della lista, per ora assumo che tra la dichiarazione della lista e il vincolo non siano state dichiarate altre liste
 element(Index,List,Value):-
 	get_lines("model.fzn",Lines),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(List,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
 	element_loop(Lines, Index, List, Value, LinesModificate, NomeLista),
@@ -800,7 +954,7 @@ sorted(List,SortedList):-
 	print_list_to_string(stream,List),
 	printf(stream,"];\n", []),
 	printf(stream,"constraint sort(X_INTRODUCED_%d_,", [NextValue]),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(SortedList,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
@@ -818,7 +972,7 @@ print_list_to_string(Stream,[H|T]):-
 sumlist(List,Sum):-
 	%se Sum e' un numero
 	number(Sum),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(List,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
 	get_list_variables_id(_,NomeLista,ListVariableId),
@@ -839,7 +993,7 @@ sumlist(List,Sum):-
 sumlist(List,Sum):-
 	%se Sum e' un numero
 	not(number(Sum)),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(List,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
 	get_list_variables_id(_,NomeLista,ListVariableId),
@@ -884,6 +1038,13 @@ print_list_of_ones(Stream,Length):-
 	printf(Stream,"1,",[]),
 	Length1 is Length - 1,
 	print_list_of_ones(Stream,Length1).
+
+print_list_of_ones_modified(Stream,1):-
+	printf(Stream,"-1",[]).
+print_list_of_ones_modified(Stream,Length):-
+	printf(Stream,"1,",[]),
+	Length1 is Length - 1,
+	print_list_of_ones_modified(Stream,Length1).
 
 print_list_of_ones_2(Stream,1):-
 	printf(Stream,"1, -1],",[]).

@@ -28,7 +28,7 @@ L :: N1..N2 :-
 	numlist(NextInt, NextInt + N - 1, ListTemp),
 	print_all(ListTemp, N, N2),
 	printf(stream, "array [1..%d] of var int: ", [N]),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(L,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
@@ -267,6 +267,41 @@ A + B #< C :-
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 % VINCOLO MINORE
 % notazione infissa
 % X #< Y
@@ -478,7 +513,7 @@ A #>= B :-
 alldifferent(L) :-
 	open("model.fzn", append, stream),
 	printf(stream, "constraint all_different_int(", []),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(L,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
@@ -490,7 +525,7 @@ atleast(N,L,V) :-
 	open("model.fzn", append, stream),
 	printf(stream, "constraint at_least_int(", []),
 	printf(stream, "%d,", [N]),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(L,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
@@ -503,7 +538,7 @@ atmost(N,L,V) :-
 	open("model.fzn", append, stream),
 	printf(stream, "constraint at_most_int(", []),
 	printf(stream, "%d,", [N]),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(L,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
@@ -583,7 +618,7 @@ stampa_occurrences_constraint(Length,N,L):-
 	%Start is NextId - Length,
 	%End is Length - 1,
 	%numlist(Start, End, ListIds),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(L,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
 	get_list_variables_id(L,NomeLista,ListIds),
@@ -613,7 +648,7 @@ maxlist(L,_):-
 	length(L,Length),
 	get_var_count(Id),
 	numlist(Id, Id + Length - 2, ListIds),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(L,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
 	get_list_variables_id(L,NomeLista,ListVariableId),
@@ -751,7 +786,7 @@ minlist(L,_):-
 	length(L,Length),
 	get_var_count(Id),
 	numlist(Id, Id + Length - 2, ListIds),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(L,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
 	get_list_variables_id(L,NomeLista,ListVariableId),
@@ -789,7 +824,7 @@ stampa_defined_var_minlist_loop(Stream,[A|T],N,V1,V2):-
 % qui andrebbe studiato bene come recuperare le variabili della lista, per ora assumo che tra la dichiarazione della lista e il vincolo non siano state dichiarate altre liste
 element(Index,List,Value):-
 	get_lines("model.fzn",Lines),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(List,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
 	element_loop(Lines, Index, List, Value, LinesModificate, NomeLista),
@@ -919,7 +954,7 @@ sorted(List,SortedList):-
 	print_list_to_string(stream,List),
 	printf(stream,"];\n", []),
 	printf(stream,"constraint sort(X_INTRODUCED_%d_,", [NextValue]),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(SortedList,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
@@ -937,7 +972,7 @@ print_list_to_string(Stream,[H|T]):-
 sumlist(List,Sum):-
 	%se Sum e' un numero
 	number(Sum),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(List,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
 	get_list_variables_id(_,NomeLista,ListVariableId),
@@ -958,7 +993,7 @@ sumlist(List,Sum):-
 sumlist(List,Sum):-
 	%se Sum e' un numero
 	not(number(Sum)),
-	write(stream, "V"),
+	%write(stream, "V"),
 	term_string(List,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
 	get_list_variables_id(_,NomeLista,ListVariableId),
