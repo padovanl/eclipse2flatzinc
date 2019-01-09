@@ -124,23 +124,25 @@ A #\= B :-
 
 
 
-%A + B #< V :-
-%	open("model.fzn", append, stream),
-%	%get_var_count(Id),
-%	printf(stream,"array [1..2] of int: X_INTRODUCED_0_ = [",[]),
-%	print_list_of_ones(stream,2),
-%	printf(stream, "];\n",[]),
-%	printf(stream, "constraint int_lin_le(X_INTRODUCED_0_,[", []),
-%	%constraint int_lin_le(X_INTRODUCED_0_,[X,Y],4);
-%	term_string(A,String),
-%	substring(String,1,4,_,S),
-%	write(stream,S),
-%	write(stream, ","),
-%	term_string(B,String2),
-%	substring(String2,1,4,_,S2),
-%	write(stream,S2),
-%	printf(stream, "],%d);\n", [V]),
-%	close(stream).
+A + B #< V :-
+	open("model.fzn", append, stream),
+	%get_var_count(Id),
+	printf(stream,"array [1..2] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones(stream,2),
+	printf(stream, "];\n",[]),
+	printf(stream, "constraint int_lin_lt(X_INTRODUCED_0_,[", []),
+	%constraint int_lin_le(X_INTRODUCED_0_,[X,Y],4);
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	printf(stream, "],%d);\n", [V]),
+	close(stream).
 
 
 
