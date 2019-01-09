@@ -17,6 +17,8 @@ A :: N1..N2 :-
 	substring(String,1,4,_,S),
 	write(stream,S),
 	write(stream, ":: output_var;\n"),
+	string_concat("V",S,VariableName),
+	assert(dominio(VariableName,N1,N2)),
 	close(stream).
 
 % DOMINIO LISTE
@@ -264,14 +266,34 @@ A + B #< C :-
 	printf(stream,"0);\n",[]),
 	close(stream).
 
-
-
-
-
-
-
-
-
+% A*B #< Valore
+A * B #< V :-
+	atomic(V),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	term_string(A,String1),
+	substring(String1,1,4,_,S1),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	%get_var_dom(S1,V1A,V2A),
+	%get_var_dom(S2,V1B,V2B),
+	string_concat("V",S1,VariableNameA),
+	dominio(VariableNameA,V1A,V2A),
+	string_concat("V",S2,VariableNameB),
+	dominio(VariableNameB,V1B,V2B),
+	Vmax is V2A * V2B,
+	Vmin is V1A * V1B,
+	printf(stream,"var %d..%d: X_INTRODUCED_0_ ::var_is_introduced :: is_defined_var;\n ", [Vmin, Vmax]),
+	printf(stream,"constraint int_lt(X_INTRODUCED_0_,%d);\n",[V]),
+	printf(stream,"constraint int_times(",[]),
+	write(stream, "V"),
+	write(stream,S1),
+	printf(stream,",",[]),
+	write(stream, "V"),
+	write(stream,S2),
+	printf(stream,",X_INTRODUCED_0_):: defines_var(X_INTRODUCED_0_);\n",[]),
+	close(stream).
 
 
 
