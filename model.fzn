@@ -1,0 +1,6 @@
+var 1..4: V_625:: output_var;
+var 1..4: V_668:: output_var;
+var 3..4: V_711:: output_var;
+array [1..3] of int: X_INTRODUCED_0_ = [1,1,-1];
+constraint int_lin_eq(X_INTRODUCED_0_,[V_625,V_668,V_711],0);
+solve satisfy;
