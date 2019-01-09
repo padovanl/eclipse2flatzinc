@@ -8,6 +8,7 @@ Una raccolta di file .ecl che mostrano come la libreria converte i principali vi
 - **element.ecl**: Nella lista L il secondo elemento deve avere valore 10 e il quinto deve avere valore 15.
 - **equal.ecl**: A e B devono avere lo stesso valore.
 - **greater_then.ecl**: A deve essere maggiore di B.
+- **lower_then.ecl**: A sommato B deve essere minore di 3.
 - **maxlist.ecl**: Il valore massimo presente nella lista deve essere 6.
 - **minimize_sumlist.ecl**: Combinazione di minimize e sumlist.
 - **occurrences.ecl**: Il valore 5 compare nella lista esattamente 2 volte.
