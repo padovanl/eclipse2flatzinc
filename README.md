@@ -65,6 +65,7 @@ La libreria supporta i principali vincoli affrontati a lezione delle librerie fd
 ## Vincoli non ancora supportati
 La libreria al momento non supporta ancora i seguenti vincoli:
 - lexico_le
+- vincoli reificati
 
 ## Limitazioni e problemi noti
 - Il vincolo sorted, seppur implementato correttamente, non funziona. Per sicurezza ho svolto un controllo incrociato con un file .fzn convertito da un file .mzn con l'istruzione mzn2fzn:

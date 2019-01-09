@@ -36,7 +36,10 @@ L :: N1..N2 :-
 
 % VINCOLO DI UGUAGLIANZA
 % notazione infissa
+% A #= B
 A #= B :- 
+	compound(B),
+	compound(A),
 	open("model.fzn", append, stream),
 	printf(stream, "constraint int_eq(", []),
 	term_string(A,String),
@@ -49,72 +52,29 @@ A #= B :-
 	printf(stream, ");\n", []),
 	close(stream).
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+% VINCOLO DI UGUAGLIANZA
+% notazione infissa
+% A #= 5
+A #= B :-
+	atomic(B),
+	compound(A),
+	open("model.fzn", append, stream),
+%	expression(A,stream),
+	printf(stream, "constraint int_eq(", []),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream,B),
+	printf(stream, ");\n", []),
+	close(stream).
 
 % VINCOLO DI DISUGUAGLIANZA
 % notazione infissa
+% A #\= B
 A #\= B :- 
+	compound(B),
+	compound(A),
 	open("model.fzn", append, stream),
 	printf(stream, "constraint int_ne(", []),
 	term_string(A,String),
@@ -129,6 +89,22 @@ A #\= B :-
 
 
 
+% VINCOLO DI DISUGUAGLIANZA
+% notazione infissa
+% A #\= 5
+A #\= B :-
+	atomic(B),
+	compound(A),
+	open("model.fzn", append, stream),
+%	expression(A,stream),
+	printf(stream, "constraint int_ne(", []),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream,B),
+	printf(stream, ");\n", []),
+	close(stream).
 
 
 
@@ -170,6 +146,7 @@ A #\= B :-
 A #< B :-
 	compound(B),
 	compound(A),
+	%expression(A),
 	open("model.fzn", append, stream),
 	printf(stream, "constraint int_lt(", []),
 	term_string(A,String),
@@ -189,6 +166,7 @@ A #< B :-
 	atomic(B),
 	compound(A),
 	open("model.fzn", append, stream),
+%	expression(A,stream),
 	printf(stream, "constraint int_lt(", []),
 	term_string(A,String),
 	substring(String,1,4,_,S),
@@ -198,9 +176,23 @@ A #< B :-
 	printf(stream, ");\n", []),
 	close(stream).
 
-
-
-
+%expression(A,_):-var(A).
+%expression(A*B,Stream):-
+%	write(Stream,"*"),
+%	expression(A,Stream),
+%	expression(B,Stream).
+%expression(A+B,Stream):-
+%	write(Stream,"+"),
+%	expression(A,Stream),
+%	expression(B,Stream).
+%expression(A/B,Stream):-
+%	write(Stream,"/"),
+%	expression(A,Stream),
+%	expression(B,Stream).
+%expression(A-B,Stream):-
+%	write(Stream,"-"),
+%	expression(A,Stream),
+%	expression(B,Stream).
 
 
 
@@ -236,7 +228,10 @@ A #< B :-
 
 % VINCOLO MINORE UGUALE
 % notazione infissa
+% A #<= B
 A #<= B :-
+	compound(B),
+	compound(A),
 	open("model.fzn", append, stream),
 	printf(stream, "constraint int_le(", []),
 	term_string(A,String),
@@ -249,9 +244,31 @@ A #<= B :-
 	printf(stream, ");\n", []),
 	close(stream).
 
+% VINCOLO MINORE UGUALE
+% notazione infissa
+% X #<= 5
+A #<= B :-
+	atomic(B),
+	compound(A),
+	open("model.fzn", append, stream),
+%	expression(A,stream),
+	printf(stream, "constraint int_le(", []),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream,B),
+	printf(stream, ");\n", []),
+	close(stream).
+
+
+
 % VINCOLO MAGGIORE
 % notazione infissa
+% A #> B
 A #> B :-
+	compound(B),
+	compound(A),
 	open("model.fzn", append, stream),
 	printf(stream, "constraint int_gt(", []),
 	term_string(A,String),
@@ -264,9 +281,29 @@ A #> B :-
 	printf(stream, ");\n", []),
 	close(stream).
 
+% VINCOLO MAGGIORE
+% notazione infissa
+% A #> 5
+A #> B :-
+	atomic(B),
+	compound(A),
+	open("model.fzn", append, stream),
+%	expression(A,stream),
+	printf(stream, "constraint int_gt(", []),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream,B),
+	printf(stream, ");\n", []),
+	close(stream).
+
 % VINCOLO MAGGIORE UGUALE
 % notazione infissa
+% A #>= B
 A #>= B :-
+	compound(B),
+	compound(A),
 	open("model.fzn", append, stream),
 	printf(stream, "constraint int_ge(", []),
 	term_string(A,String),
@@ -278,6 +315,25 @@ A #>= B :-
 	write(stream,S2),
 	printf(stream, ");\n", []),
 	close(stream).
+
+% VINCOLO MAGGIORE UGUALE
+% notazione infissa
+% A #>= 5
+A #>= B :-
+	atomic(B),
+	compound(A),
+	open("model.fzn", append, stream),
+%	expression(A,stream),
+	printf(stream, "constraint int_ge(", []),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream,B),
+	printf(stream, ");\n", []),
+	close(stream).
+
+
 
 % VINCOLO ALLDIFFERENT
 alldifferent(L) :-
