@@ -49,6 +49,69 @@ A #= B :-
 	printf(stream, ");\n", []),
 	close(stream).
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 % VINCOLO DI DISUGUAGLIANZA
 % notazione infissa
 A #\= B :- 
@@ -64,6 +127,43 @@ A #\= B :-
 	printf(stream, ");\n", []),
 	close(stream).
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+%A + B #< V :-
+%	open("model.fzn", append, stream),
+%	%get_var_count(Id),
+%	printf(stream,"array [1..2] of int: X_INTRODUCED_0_ = [",[]),
+%	print_list_of_ones(stream,2),
+%	printf(stream, "];\n",[]),
+%	printf(stream, "constraint int_lin_le(X_INTRODUCED_0_,[", []),
+%	%constraint int_lin_le(X_INTRODUCED_0_,[X,Y],4);
+%	term_string(A,String),
+%	substring(String,1,4,_,S),
+%	write(stream,S),
+%	write(stream, ","),
+%	term_string(B,String2),
+%	substring(String2,1,4,_,S2),
+%	write(stream,S2),
+%	printf(stream, "],%d);\n", [V]),
+%	close(stream).
+
+
+
+
+
+
+
 % VINCOLO MINORE
 % notazione infissa
 A #< B :-
@@ -78,6 +178,41 @@ A #< B :-
 	write(stream,S2),
 	printf(stream, ");\n", []),
 	close(stream).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 % VINCOLO MINORE UGUALE
 % notazione infissa
@@ -179,13 +314,13 @@ stampa_occurrences_global(ListIds,N):-
 	printf(stream,"-%d);",[N]),
 	close(stream).
 
-print_head_occurrences_global_constraint(Stream,[A|T]):-
+print_head_occurrences_global_constraint(Stream,[A|_]):-
 	A1 is A + 1,
 	printf(Stream,"%d_,[",[A1]).
 
-stampa_occurrences_global_loop(Stream,[A,B]):-
+stampa_occurrences_global_loop(Stream,[_,B]):-
 	printf(Stream, "X_INTRODUCED_%d_],", [B]).
-stampa_occurrences_global_loop(Stream,[A,B|T]):-
+stampa_occurrences_global_loop(Stream,[_,B|T]):-
 	printf(Stream, "X_INTRODUCED_%d_,", [B]),
 	stampa_occurrences_global_loop(Stream,T).
 
@@ -216,9 +351,9 @@ stampa_defined_var_loop(Stream,[A,B|T],N):-
 	printf(Stream,"var 0..1: X_INTRODUCED_%d_ ::var_is_introduced :: is_defined_var;\n", [B]),
 	stampa_defined_var_loop(Stream,T,N).
 
-print_list(Stream,[T]):-
+print_list(Stream,[_]):-
 	printf(Stream,"-1];\n",[]).
-print_list(Stream,[H|T]):-
+print_list(Stream,[_|T]):-
 	printf(Stream,"-1,",[]),
 	print_list(Stream,T).
 
@@ -255,7 +390,7 @@ remove_last_loop([X1|Xs], [X0|Ys], X0) :-
    remove_last_loop(Xs, Ys, X1).  
 
 % VINCOLO MAXLIST
-maxlist(L,V):-
+maxlist(L,_):-
 	length(L,Length),
 	get_var_count(Id),
 	numlist(Id, Id + Length - 2, ListIds),
@@ -271,7 +406,7 @@ get_list_dom(V1,V2,ListVariableId):-
 	get_lines("model.fzn",Lines),
 	get_list_dom_loop(Lines,V1,V2,ListVariableId).
 
-get_list_dom_loop([H|T],V1,V2,[H1|T1]):-
+get_list_dom_loop([H|_],V1,V2,[H1|_]):-
 	is_var(H),
 	split_string(H,"_","",SplitList),
 	get_second_last_element(SplitList, Temp2),
@@ -279,13 +414,13 @@ get_list_dom_loop([H|T],V1,V2,[H1|T1]):-
 	Temp1 == Temp2,
 	get_dom(H,V1,V2).
 
-get_list_dom_loop([H|T],V1,V2,[H1|T1]):-
+get_list_dom_loop([H|T],V1,V2,[H1|_]):-
 	is_var(H),
 	split_string(H,"_","",SplitList),
 	get_second_last_element(SplitList, Temp2),
 	number_string(H1,Temp1),
 	Temp1 \= Temp2,
-	get_list_dom_loop(T,V1,V2,[H1|T1]).
+	get_list_dom_loop(T,V1,V2,[H1|_]).
 
 get_list_dom_loop([H|T],V1,V2,ListVariableId):-
 	not(is_var(H)),
@@ -326,16 +461,16 @@ stampa_defined_var_maxlist(ListIds,Length,V1,V2):-
 	stampa_defined_var_maxlist_loop(stream, ListIds,Length,V1,V2),
 	close(stream).
 
-stampa_defined_var_maxlist_loop(Stream,[A],N,V1,V2):-
+stampa_defined_var_maxlist_loop(Stream,[A],_,_,V2):-
 	printf(Stream,"var %d..%d: X_INTRODUCED_%d_ ::var_is_introduced :: is_defined_var;\n", [V2,V2,A]).
 stampa_defined_var_maxlist_loop(Stream,[A|T],N,V1,V2):-
 	printf(Stream,"var %d..%d: X_INTRODUCED_%d_ ::var_is_introduced :: is_defined_var;\n", [V1,V2,A]),
 	stampa_defined_var_maxlist_loop(Stream,T,N,V1,V2).
 
-get_list_variables_id(List,Nome,ListId):-
+get_list_variables_id(_,Nome,ListId):-
 	get_lines("model.fzn", Lines),
 	get_list_variables_id_loop(Lines,Nome,ListId).
-get_list_variables_id_loop([H|T],Nome,ListId):-
+get_list_variables_id_loop([H|_],Nome,ListId):-
 	array(H),
 	split_string(H,":","",SplitList),
 	get_list_name_from_model(SplitList, Temp2),
@@ -381,18 +516,18 @@ get_first_id(First,FInt):-
 	get_second_last_element(List,Element),
 	number_string(FInt,Element).
 
-get_second_last_element([A,B],E):-
+get_second_last_element([A,_],E):-
 	E = A.
-get_second_last_element([A|T],E):-
+get_second_last_element([_|T],E):-
 	get_second_last_element(T,E).
 
 get_last_element([A],E):-
 	E = A.
-get_last_element([A|T],E):-
+get_last_element([_|T],E):-
 	get_last_element(T,E).
 
 % VINCOLO MINLIST
-minlist(L,V):-
+minlist(L,_):-
 	length(L,Length),
 	get_var_count(Id),
 	numlist(Id, Id + Length - 2, ListIds),
@@ -423,7 +558,7 @@ stampa_defined_var_minlist(ListIds,Length,V1,V2):-
 	stampa_defined_var_minlist_loop(stream, ListIds,Length,V1,V2),
 	close(stream).
 
-stampa_defined_var_minlist_loop(Stream,[A],N,V1,V2):-
+stampa_defined_var_minlist_loop(Stream,[A],_,_,V2):-
 	printf(Stream,"var %d..%d: X_INTRODUCED_%d_ ::var_is_introduced :: is_defined_var;\n", [V2,V2,A]).
 stampa_defined_var_minlist_loop(Stream,[A|T],N,V1,V2):-
 	printf(Stream,"var %d..%d: X_INTRODUCED_%d_ ::var_is_introduced :: is_defined_var;\n", [V1,V2,A]),
@@ -486,13 +621,13 @@ crea_stringa_variabili([A|T], String, Result):-
 	string_concat(String,A,Temp),
 	crea_stringa_variabili(T, Temp, Result).
 
-get_first_element([A|T],S):-
+get_first_element([A|_],S):-
 	S = A.
 
 modifica_dichiarazione_array_loop_2([], _, _,_,_).
 
 %primo elemento
-modifica_dichiarazione_array_loop_2([H|T], Index, Value,Cnt,[H1|T1]):-
+modifica_dichiarazione_array_loop_2([_|T], Index, Value,Cnt,[H1|T1]):-
 	Cnt == 1,
 	Index == 1,
 	number_string(Value,StringValue),
@@ -527,16 +662,16 @@ modifica_dichiarazione_array_loop_2([H|T], Index, Value,Cnt,[H1|T1]):-
 	modifica_dichiarazione_array_loop_2(T,Index,Value,Cnt1,T1).
 
 %devo modificare l'ultimo elemento
-modifica_dichiarazione_array_loop_2([H], Index, Value,Cnt,[H1]):-
+modifica_dichiarazione_array_loop_2([_], Index, Value,Cnt,[H1]):-
 	Index == Cnt,
 	number_string(Value,StringValue),
 	string_concat(StringValue,"];",Result),
 	H1 = Result,
 	Cnt1 is Cnt + 1,
-	modifica_dichiarazione_array_loop_2([],Index,Value,Cnt1,T1).
+	modifica_dichiarazione_array_loop_2([],Index,Value,Cnt1,_).
 
 % devo modificare elementi intermedi
-modifica_dichiarazione_array_loop_2([H|T], Index, Value,Cnt,[H1|T1]):-
+modifica_dichiarazione_array_loop_2([_|T], Index, Value,Cnt,[H1|T1]):-
 	Cnt \= 1,
 	Index == Cnt,
 	number_string(Value,StringValue),
@@ -545,10 +680,10 @@ modifica_dichiarazione_array_loop_2([H|T], Index, Value,Cnt,[H1|T1]):-
 	Cnt1 is Cnt + 1,
 	modifica_dichiarazione_array_loop_2(T,Index,Value,Cnt1,T1).
 
-get_second_element([A,B|T],S):-
+get_second_element([_,B|_],S):-
 	S = B.
 
-get_list_name_from_model([A,B|T],ListName):-
+get_list_name_from_model([_,B|_],ListName):-
 	ListName = B.
 
 array(String):-substring(String,1,5,"array").
@@ -581,8 +716,8 @@ sumlist(List,Sum):-
 	number(Sum),
 	term_string(List,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
-	get_list_variables_id(L,NomeLista,ListVariableId),
-	get_list_dom(V1,V2,ListVariableId),
+	get_list_variables_id(_,NomeLista,ListVariableId),
+	get_list_dom(_,_,ListVariableId),
 	get_var_count(NextValue),
 	open("model.fzn",append,stream),
 	printf(stream,"constraint int_lin_eq(X_INTRODUCED_%d_,[",[NextValue]),
@@ -601,8 +736,8 @@ sumlist(List,Sum):-
 	not(number(Sum)),
 	term_string(List,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
-	get_list_variables_id(L,NomeLista,ListVariableId),
-	get_list_dom(V1,V2,ListVariableId),
+	get_list_variables_id(_,NomeLista,ListVariableId),
+	get_list_dom(_,_,ListVariableId),
 	get_var_count(NextValue),
 	open("model.fzn",append,stream),
 	length(List,Length),
@@ -669,7 +804,7 @@ print_list_of_ones_2(Stream,Length):-
 	
 
 % MINIMIZE
-minimize(labeling(L),C):-
+minimize(labeling(_),_):-
 	% al momento non devono essere stati implementati altri vincoli prima di questa istruzione. Testato con sumlist
 	open("model.fzn", append, stream),
 	get_var_count(Next),
@@ -680,7 +815,7 @@ minimize(labeling(L),C):-
 	delete_temp_files.
 
 % LABELING
-labeling(L):-
+labeling(_):-
 	open("model.fzn", append, stream),
 	write(stream, "solve satisfy;\n"),
 	close(stream),
@@ -728,7 +863,7 @@ print_all([X|Rest], N, Dmax) :-
 	print_all(Rest, N, Dmax).
 
 % stampa la lista di variabili di output_array
-print_all_2([X], N) :-
+print_all_2([X], _) :-
 	open("model.fzn", append, s),
 	printf(s, "X_INTRODUCED_%d_];\n", [X]),
 	close(s).
@@ -770,7 +905,7 @@ temp([H|T], StreamOut):-
 	write(StreamOut, "Nuova dichiarazione\n"),
 	stampa_resto([H|T], StreamOut).
 
-stampa_resto([],StreamOut).
+stampa_resto([],_).
 
 stampa_resto([H|T], StreamOut):-
 	write(StreamOut, H),
@@ -800,9 +935,9 @@ copia_file_loop([H|T], StreamOut):-
 get_var_count(NextValue):-
 	trova_ultima_dichiarazione(UltimaDichiarazione),
 	UltimaDichiarazione \= "-1",
-	name_value(UltimaDichiarazione, Name,Value),
-	name_value(Value, Name2,Value2),
-	name_value(Value2,Name3,Value3),
+	name_value(UltimaDichiarazione, _,Value),
+	name_value(Value, _,Value2),
+	name_value(Value2,Name3,_),
 	integer_atom(IntValue,Name3),
 	succ(IntValue, NextValue).
 
@@ -827,7 +962,7 @@ trova_ultima_dichiarazione_loop([A,B|T],Ultima):-
 	trova_ultima_dichiarazione_loop([B|T],Ultima).
 
 
-trova_ultima_dichiarazione_loop([A,B|T],Ultima):-
+trova_ultima_dichiarazione_loop([A,B|_],Ultima):-
 	defined_var(A),
 	not(defined_var(B)),
 	Ultima = A.
@@ -844,17 +979,17 @@ defined_var(String):-
 	split_string(String," ","",SplitList), %se definisce una variabile al quarto elemento trovo "int"
 	is_array_variable(SplitList,1).
 
-is_array_variable([H|T],4):- !,
+is_array_variable([H|_],4):- !,
 	H == "int:".
 
-is_array_variable([H|T],Cnt):-
+is_array_variable([_|T],Cnt):-
 	Cnt1 is Cnt + 1,
 	is_array_variable(T,Cnt1).
 
-is_array_from_eclipse([H|T],4):-
+is_array_from_eclipse([H|_],4):-
 	H == "var".
 
-is_array_from_eclipse([H|T],Cnt):-
+is_array_from_eclipse([_|T],Cnt):-
 	Cnt1 is Cnt + 1,
 	is_array_from_eclipse(T,Cnt1).
 	
@@ -880,19 +1015,19 @@ split_lines_to_file_loop([H|T], StreamVar, StreamConst, StreamArray):-
 	decision(H, StreamVar, StreamConst, StreamArray),
 	split_lines_to_file_loop(T, StreamVar, StreamConst, StreamArray).
 
-decision(H, StreamVar, StreamConst, StreamArray):-
+decision(H, StreamVar, _, _):-
 	variabili(H),
 	printf(StreamVar,"%s\n",[H]).
-decision(H, StreamVar, StreamConst,StreamArray):-
+decision(H, _, _,StreamArray):-
 	split_string(H," ","",SplitList),
 	is_array_from_eclipse(SplitList,1),
 	printf(StreamArray,"%s\n",[H]).
-decision(H, StreamVar, StreamConst,StreamArray):-
+decision(H, _, StreamConst,_):-
 	split_string(H," ","",SplitList),
 	is_constraint(SplitList),
 	printf(StreamConst,"%s\n",[H]).
 
-is_constraint([H|T]):-
+is_constraint([H|_]):-
 	H == "constraint".
 
 merge_files:-
