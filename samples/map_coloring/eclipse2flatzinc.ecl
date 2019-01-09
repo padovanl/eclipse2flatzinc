@@ -12,6 +12,7 @@ A :: N1..N2 :-
 	N == 1,
 	open("model.fzn", append, stream),
 	printf(stream, "var %d..%d: ", [N1, N2]),
+	write(stream, "V"),
 	term_string(A,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
@@ -27,6 +28,7 @@ L :: N1..N2 :-
 	numlist(NextInt, NextInt + N - 1, ListTemp),
 	print_all(ListTemp, N, N2),
 	printf(stream, "array [1..%d] of var int: ", [N]),
+	write(stream, "V"),
 	term_string(L,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
@@ -36,99 +38,81 @@ L :: N1..N2 :-
 
 % VINCOLO DI UGUAGLIANZA
 % notazione infissa
+% A #= B
 A #= B :- 
+	compound(B),
+	compound(A),
 	open("model.fzn", append, stream),
 	printf(stream, "constraint int_eq(", []),
+	write(stream, "V"),
 	term_string(A,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
 	write(stream, ","),
+	write(stream, "V"),
 	term_string(B,String2),
 	substring(String2,1,4,_,S2),
 	write(stream,S2),
 	printf(stream, ");\n", []),
 	close(stream).
 
+% VINCOLO DI UGUAGLIANZA
+% notazione infissa
+% A #= 5
+A #= B :-
+	atomic(B),
+	compound(A),
+	open("model.fzn", append, stream),
+%	expression(A,stream),
+	printf(stream, "constraint int_eq(", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream,B),
+	printf(stream, ");\n", []),
+	close(stream).
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+% VINCOLO DI DISUGUAGLIANZA
+% notazione infissa
+% A #\= B
+A #\= B :- 
+	compound(B),
+	compound(A),
+	open("model.fzn", append, stream),
+	printf(stream, "constraint int_ne(", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	printf(stream, ");\n", []),
+	close(stream).
 
 
 
 % VINCOLO DI DISUGUAGLIANZA
 % notazione infissa
-A #\= B :- 
+% A #\= 5
+A #\= B :-
+	atomic(B),
+	compound(A),
 	open("model.fzn", append, stream),
+%	expression(A,stream),
 	printf(stream, "constraint int_ne(", []),
+	write(stream, "V"),
 	term_string(A,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
 	write(stream, ","),
-	term_string(B,String2),
-	substring(String2,1,4,_,S2),
-	write(stream,S2),
+	write(stream,B),
 	printf(stream, ");\n", []),
 	close(stream).
-
-
-
 
 
 
@@ -166,21 +150,60 @@ A #\= B :-
 
 % VINCOLO MINORE
 % notazione infissa
+% X #< Y
 A #< B :-
+	compound(B),
+	compound(A),
+	%expression(A),
 	open("model.fzn", append, stream),
 	printf(stream, "constraint int_lt(", []),
+	write(stream, "V"),
 	term_string(A,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
 	write(stream, ","),
+	write(stream, "V"),
 	term_string(B,String2),
 	substring(String2,1,4,_,S2),
 	write(stream,S2),
 	printf(stream, ");\n", []),
 	close(stream).
 
+% VINCOLO MINORE
+% notazione infissa
+% X #< 5
+A #< B :-
+	atomic(B),
+	compound(A),
+	open("model.fzn", append, stream),
+%	expression(A,stream),
+	printf(stream, "constraint int_lt(", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream,B),
+	printf(stream, ");\n", []),
+	close(stream).
 
-
+%expression(A,_):-var(A).
+%expression(A*B,Stream):-
+%	write(Stream,"*"),
+%	expression(A,Stream),
+%	expression(B,Stream).
+%expression(A+B,Stream):-
+%	write(Stream,"+"),
+%	expression(A,Stream),
+%	expression(B,Stream).
+%expression(A/B,Stream):-
+%	write(Stream,"/"),
+%	expression(A,Stream),
+%	expression(B,Stream).
+%expression(A-B,Stream):-
+%	write(Stream,"-"),
+%	expression(A,Stream),
+%	expression(B,Stream).
 
 
 
@@ -216,13 +239,58 @@ A #< B :-
 
 % VINCOLO MINORE UGUALE
 % notazione infissa
+% A #<= B
 A #<= B :-
+	compound(B),
+	compound(A),
 	open("model.fzn", append, stream),
 	printf(stream, "constraint int_le(", []),
+	write(stream, "V"),
 	term_string(A,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
 	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	printf(stream, ");\n", []),
+	close(stream).
+
+% VINCOLO MINORE UGUALE
+% notazione infissa
+% X #<= 5
+A #<= B :-
+	atomic(B),
+	compound(A),
+	open("model.fzn", append, stream),
+%	expression(A,stream),
+	printf(stream, "constraint int_le(", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream,B),
+	printf(stream, ");\n", []),
+	close(stream).
+
+
+
+% VINCOLO MAGGIORE
+% notazione infissa
+% A #> B
+A #> B :-
+	compound(B),
+	compound(A),
+	open("model.fzn", append, stream),
+	printf(stream, "constraint int_gt(", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
 	term_string(B,String2),
 	substring(String2,1,4,_,S2),
 	write(stream,S2),
@@ -231,13 +299,36 @@ A #<= B :-
 
 % VINCOLO MAGGIORE
 % notazione infissa
+% A #> 5
 A #> B :-
+	atomic(B),
+	compound(A),
 	open("model.fzn", append, stream),
+%	expression(A,stream),
 	printf(stream, "constraint int_gt(", []),
+	write(stream, "V"),
 	term_string(A,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
 	write(stream, ","),
+	write(stream,B),
+	printf(stream, ");\n", []),
+	close(stream).
+
+% VINCOLO MAGGIORE UGUALE
+% notazione infissa
+% A #>= B
+A #>= B :-
+	compound(B),
+	compound(A),
+	open("model.fzn", append, stream),
+	printf(stream, "constraint int_ge(", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
 	term_string(B,String2),
 	substring(String2,1,4,_,S2),
 	write(stream,S2),
@@ -246,23 +337,29 @@ A #> B :-
 
 % VINCOLO MAGGIORE UGUALE
 % notazione infissa
+% A #>= 5
 A #>= B :-
+	atomic(B),
+	compound(A),
 	open("model.fzn", append, stream),
+%	expression(A,stream),
 	printf(stream, "constraint int_ge(", []),
+	write(stream, "V"),
 	term_string(A,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
 	write(stream, ","),
-	term_string(B,String2),
-	substring(String2,1,4,_,S2),
-	write(stream,S2),
+	write(stream,B),
 	printf(stream, ");\n", []),
 	close(stream).
+
+
 
 % VINCOLO ALLDIFFERENT
 alldifferent(L) :-
 	open("model.fzn", append, stream),
 	printf(stream, "constraint all_different_int(", []),
+	write(stream, "V"),
 	term_string(L,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
@@ -274,6 +371,7 @@ atleast(N,L,V) :-
 	open("model.fzn", append, stream),
 	printf(stream, "constraint at_least_int(", []),
 	printf(stream, "%d,", [N]),
+	write(stream, "V"),
 	term_string(L,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
@@ -286,6 +384,7 @@ atmost(N,L,V) :-
 	open("model.fzn", append, stream),
 	printf(stream, "constraint at_most_int(", []),
 	printf(stream, "%d,", [N]),
+	write(stream, "V"),
 	term_string(L,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
@@ -365,6 +464,7 @@ stampa_occurrences_constraint(Length,N,L):-
 	%Start is NextId - Length,
 	%End is Length - 1,
 	%numlist(Start, End, ListIds),
+	write(stream, "V"),
 	term_string(L,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
 	get_list_variables_id(L,NomeLista,ListIds),
@@ -394,6 +494,7 @@ maxlist(L,_):-
 	length(L,Length),
 	get_var_count(Id),
 	numlist(Id, Id + Length - 2, ListIds),
+	write(stream, "V"),
 	term_string(L,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
 	get_list_variables_id(L,NomeLista,ListVariableId),
@@ -531,6 +632,7 @@ minlist(L,_):-
 	length(L,Length),
 	get_var_count(Id),
 	numlist(Id, Id + Length - 2, ListIds),
+	write(stream, "V"),
 	term_string(L,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
 	get_list_variables_id(L,NomeLista,ListVariableId),
@@ -568,6 +670,7 @@ stampa_defined_var_minlist_loop(Stream,[A|T],N,V1,V2):-
 % qui andrebbe studiato bene come recuperare le variabili della lista, per ora assumo che tra la dichiarazione della lista e il vincolo non siano state dichiarate altre liste
 element(Index,List,Value):-
 	get_lines("model.fzn",Lines),
+	write(stream, "V"),
 	term_string(List,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
 	element_loop(Lines, Index, List, Value, LinesModificate, NomeLista),
@@ -697,6 +800,7 @@ sorted(List,SortedList):-
 	print_list_to_string(stream,List),
 	printf(stream,"];\n", []),
 	printf(stream,"constraint sort(X_INTRODUCED_%d_,", [NextValue]),
+	write(stream, "V"),
 	term_string(SortedList,String),
 	substring(String,1,4,_,S),
 	write(stream,S),
@@ -714,6 +818,7 @@ print_list_to_string(Stream,[H|T]):-
 sumlist(List,Sum):-
 	%se Sum e' un numero
 	number(Sum),
+	write(stream, "V"),
 	term_string(List,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
 	get_list_variables_id(_,NomeLista,ListVariableId),
@@ -734,6 +839,7 @@ sumlist(List,Sum):-
 sumlist(List,Sum):-
 	%se Sum e' un numero
 	not(number(Sum)),
+	write(stream, "V"),
 	term_string(List,Tmp),
 	substring(Tmp,1,4,_,NomeLista),
 	get_list_variables_id(_,NomeLista,ListVariableId),
