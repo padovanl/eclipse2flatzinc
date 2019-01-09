@@ -166,7 +166,10 @@ A #\= B :-
 
 % VINCOLO MINORE
 % notazione infissa
+% X #< Y
 A #< B :-
+	compound(B),
+	compound(A),
 	open("model.fzn", append, stream),
 	printf(stream, "constraint int_lt(", []),
 	term_string(A,String),
@@ -178,6 +181,23 @@ A #< B :-
 	write(stream,S2),
 	printf(stream, ");\n", []),
 	close(stream).
+
+% VINCOLO MINORE
+% notazione infissa
+% X #< 5
+A #< B :-
+	atomic(B),
+	compound(A),
+	open("model.fzn", append, stream),
+	printf(stream, "constraint int_lt(", []),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream,B),
+	printf(stream, ");\n", []),
+	close(stream).
+
 
 
 
