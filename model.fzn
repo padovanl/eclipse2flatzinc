@@ -1,6 +1,0 @@
-var 1..15: V_252:: output_var;
-var 1..5: V_284:: output_var;
-var 1..10: V_316:: output_var;
-array [1..3] of int: X_INTRODUCED_0_ = [1,-1,-1];
-constraint int_lin_lt(X_INTRODUCED_0_,[V_252,V_284,V_316],0);
-solve satisfy;
