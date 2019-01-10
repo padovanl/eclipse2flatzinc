@@ -17,6 +17,8 @@ A :: N1..N2 :-
 	substring(String,1,4,_,S),
 	write(stream,S),
 	write(stream, ":: output_var;\n"),
+	string_concat("V",S,VariableName),
+	assert(dominio(VariableName,N1,N2)),
 	close(stream).
 
 % DOMINIO LISTE
@@ -37,6 +39,137 @@ L :: N1..N2 :-
 	print_all_2(ListTemp,N).
 
 % VINCOLO DI UGUAGLIANZA
+
+
+
+
+% A + B #= Valore
+A + B #= V :-
+	atomic(V),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..2] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones(stream,2),
+	printf(stream, "];\n",[]),
+	printf(stream, "constraint int_lin_eq(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	printf(stream, "],%d);\n", [V]),
+	close(stream).
+
+% A + B #= C
+A + B #= C :-
+	compound(C),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..3] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones(stream,2),
+	printf(stream, ",-1];\n",[]),
+	printf(stream, "constraint int_lin_eq(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	write(stream, ",V"),
+	term_string(C,String3),
+	substring(String3,1,4,_,S3),
+	write(stream,S3),
+	printf(stream, "],", []),
+	printf(stream,"0);\n",[]),
+	close(stream).
+
+% A - B #= Valore
+A - B #= V :-
+	atomic(V),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..2] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones_modified(stream,2),
+	printf(stream, "];\n",[]),
+	printf(stream, "constraint int_lin_eq(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	printf(stream, "],%d);\n", [V]),
+	close(stream).
+
+% A - B #= C
+A - B #= C :-
+	compound(C),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..3] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones_modified(stream,2),
+	printf(stream, ",-1];\n",[]),
+	printf(stream, "constraint int_lin_eq(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	write(stream, ",V"),
+	term_string(C,String3),
+	substring(String3,1,4,_,S3),
+	write(stream,S3),
+	printf(stream, "],", []),
+	printf(stream,"0);\n",[]),
+	close(stream).
+
+% A*B #= Valore
+A * B #= V :-
+	atomic(V),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	term_string(A,String1),
+	substring(String1,1,4,_,S1),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	%get_var_dom(S1,V1A,V2A),
+	%get_var_dom(S2,V1B,V2B),
+	string_concat("V",S1,VariableNameA),
+	dominio(VariableNameA,V1A,V2A),
+	string_concat("V",S2,VariableNameB),
+	dominio(VariableNameB,V1B,V2B),
+	Vmax is V2A * V2B,
+	Vmin is V1A * V1B,
+	printf(stream,"var %d..%d: X_INTRODUCED_0_ ::var_is_introduced :: is_defined_var;\n ", [Vmin, Vmax]),
+	printf(stream,"constraint int_eq(X_INTRODUCED_0_,%d);\n",[V]),
+	printf(stream,"constraint int_times(",[]),
+	write(stream, "V"),
+	write(stream,S1),
+	printf(stream,",",[]),
+	write(stream, "V"),
+	write(stream,S2),
+	printf(stream,",X_INTRODUCED_0_):: defines_var(X_INTRODUCED_0_);\n",[]),
+	close(stream).
+
 % notazione infissa
 % A #= B
 A #= B :- 
@@ -74,59 +207,139 @@ A #= B :-
 	printf(stream, ");\n", []),
 	close(stream).
 
-% A + B #= Valore
-%A + B #= V :-
-%	atomic(V),
-%	compound(A),
-%	compound(B),
-%	open("model.fzn", append, stream),
-%	printf(stream,"array [1..2] of int: X_INTRODUCED_0_ = [",[]),
-%	print_list_of_ones(stream,2),
-%	printf(stream, "];\n",[]),
-%	printf(stream, "constraint int_lin_eq(X_INTRODUCED_0_,[", []),
-%	write(stream, "V"),
-%	term_string(A,String),
-%	substring(String,1,4,_,S),
-%	write(stream,S),
-%	write(stream, ","),
-%	write(stream, "V"),
-%	term_string(B,String2),
-%	substring(String2,1,4,_,S2),
-%	write(stream,S2),
-%	printf(stream, "],%d);\n", [V]),
-%	close(stream).
-
-% A + B #= C
-%A + B #= C :-
-%	compound(C),
-%	compound(A),
-%	compound(B),
-%	open("model.fzn", append, stream),
-%	printf(stream,"array [1..3] of int: X_INTRODUCED_0_ = [",[]),
-%	print_list_of_ones(stream,2),
-%	printf(stream, ",-1];\n",[]),
-%	printf(stream, "constraint int_lin_eq(X_INTRODUCED_0_,[", []),
-%	write(stream, "V"),
-%	term_string(A,String),
-%	substring(String,1,4,_,S),
-%	write(stream,S),
-%	write(stream, ","),
-%	write(stream, "V"),
-%	term_string(B,String2),
-%	substring(String2,1,4,_,S2),
-%	write(stream,S2),
-%	write(stream, ",V"),
-%	term_string(C,String3),
-%	substring(String3,1,4,_,S3),
-%	write(stream,S3),
-%	printf(stream, "],", []),
-%	printf(stream,"0);\n",[]),
-%	close(stream).
-
-
-
 
 % VINCOLO DI DISUGUAGLIANZA
+
+
+
+
+% A + B #\= Valore
+A + B #\= V :-
+	atomic(V),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..2] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones(stream,2),
+	printf(stream, "];\n",[]),
+	printf(stream, "constraint int_lin_ne(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	printf(stream, "],%d);\n", [V]),
+	close(stream).
+
+% A + B #\= C
+A + B #\= C :-
+	compound(C),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..3] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones(stream,2),
+	printf(stream, ",-1];\n",[]),
+	printf(stream, "constraint int_lin_ne(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	write(stream, ",V"),
+	term_string(C,String3),
+	substring(String3,1,4,_,S3),
+	write(stream,S3),
+	printf(stream, "],", []),
+	printf(stream,"0);\n",[]),
+	close(stream).
+
+% A - B #\= Valore
+A - B #\= V :-
+	atomic(V),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..2] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones_modified(stream,2),
+	printf(stream, "];\n",[]),
+	printf(stream, "constraint int_lin_ne(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	printf(stream, "],%d);\n", [V]),
+	close(stream).
+
+% A - B #\= C
+A - B #\= C :-
+	compound(C),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..3] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones_modified(stream,2),
+	printf(stream, ",-1];\n",[]),
+	printf(stream, "constraint int_lin_ne(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	write(stream, ",V"),
+	term_string(C,String3),
+	substring(String3,1,4,_,S3),
+	write(stream,S3),
+	printf(stream, "],", []),
+	printf(stream,"0);\n",[]),
+	close(stream).
+
+% A*B #\= Valore
+A * B #\= V :-
+	atomic(V),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	term_string(A,String1),
+	substring(String1,1,4,_,S1),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	%get_var_dom(S1,V1A,V2A),
+	%get_var_dom(S2,V1B,V2B),
+	string_concat("V",S1,VariableNameA),
+	dominio(VariableNameA,V1A,V2A),
+	string_concat("V",S2,VariableNameB),
+	dominio(VariableNameB,V1B,V2B),
+	Vmax is V2A * V2B,
+	Vmin is V1A * V1B,
+	printf(stream,"var %d..%d: X_INTRODUCED_0_ ::var_is_introduced :: is_defined_var;\n ", [Vmin, Vmax]),
+	printf(stream,"constraint int_ne(X_INTRODUCED_0_,%d);\n",[V]),
+	printf(stream,"constraint int_times(",[]),
+	write(stream, "V"),
+	write(stream,S1),
+	printf(stream,",",[]),
+	write(stream, "V"),
+	write(stream,S2),
+	printf(stream,",X_INTRODUCED_0_):: defines_var(X_INTRODUCED_0_);\n",[]),
+	close(stream).
+
 % notazione infissa
 % A #\= B
 A #\= B :- 
@@ -166,6 +379,7 @@ A #\= B :-
 	printf(stream, ");\n", []),
 	close(stream).
 
+% VINCOLO MINORE
 % A + B #< Valore
 A + B #< V :-
 	atomic(V),
@@ -186,6 +400,33 @@ A + B #< V :-
 	substring(String2,1,4,_,S2),
 	write(stream,S2),
 	printf(stream, "],%d);\n", [V]),
+	close(stream).
+
+% A + B #< C
+A + B #< C :-
+	compound(C),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..3] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones(stream,2),
+	printf(stream, ",-1];\n",[]),
+	printf(stream, "constraint int_lin_lt(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	write(stream, ",V"),
+	term_string(C,String3),
+	substring(String3,1,4,_,S3),
+	write(stream,S3),
+	printf(stream, "],", []),
+	printf(stream,"0);\n",[]),
 	close(stream).
 
 % A - B #< Valore
@@ -237,70 +478,35 @@ A - B #< C :-
 	printf(stream,"0);\n",[]),
 	close(stream).
 
-% A + B #< C
-A + B #< C :-
-	compound(C),
+
+% A*B #< Valore
+A * B #< V :-
+	atomic(V),
 	compound(A),
 	compound(B),
 	open("model.fzn", append, stream),
-	printf(stream,"array [1..3] of int: X_INTRODUCED_0_ = [",[]),
-	print_list_of_ones(stream,2),
-	printf(stream, ",-1];\n",[]),
-	printf(stream, "constraint int_lin_lt(X_INTRODUCED_0_,[", []),
-	write(stream, "V"),
-	term_string(A,String),
-	substring(String,1,4,_,S),
-	write(stream,S),
-	write(stream, ","),
-	write(stream, "V"),
+	term_string(A,String1),
+	substring(String1,1,4,_,S1),
 	term_string(B,String2),
 	substring(String2,1,4,_,S2),
+	%get_var_dom(S1,V1A,V2A),
+	%get_var_dom(S2,V1B,V2B),
+	string_concat("V",S1,VariableNameA),
+	dominio(VariableNameA,V1A,V2A),
+	string_concat("V",S2,VariableNameB),
+	dominio(VariableNameB,V1B,V2B),
+	Vmax is V2A * V2B,
+	Vmin is V1A * V1B,
+	printf(stream,"var %d..%d: X_INTRODUCED_0_ ::var_is_introduced :: is_defined_var;\n ", [Vmin, Vmax]),
+	printf(stream,"constraint int_lt(X_INTRODUCED_0_,%d);\n",[V]),
+	printf(stream,"constraint int_times(",[]),
+	write(stream, "V"),
+	write(stream,S1),
+	printf(stream,",",[]),
+	write(stream, "V"),
 	write(stream,S2),
-	write(stream, ",V"),
-	term_string(C,String3),
-	substring(String3,1,4,_,S3),
-	write(stream,S3),
-	printf(stream, "],", []),
-	printf(stream,"0);\n",[]),
+	printf(stream,",X_INTRODUCED_0_):: defines_var(X_INTRODUCED_0_);\n",[]),
 	close(stream).
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 % VINCOLO MINORE
 % notazione infissa
@@ -341,57 +547,135 @@ A #< B :-
 	printf(stream, ");\n", []),
 	close(stream).
 
-%expression(A,_):-var(A).
-%expression(A*B,Stream):-
-%	write(Stream,"*"),
-%	expression(A,Stream),
-%	expression(B,Stream).
-%expression(A+B,Stream):-
-%	write(Stream,"+"),
-%	expression(A,Stream),
-%	expression(B,Stream).
-%expression(A/B,Stream):-
-%	write(Stream,"/"),
-%	expression(A,Stream),
-%	expression(B,Stream).
-%expression(A-B,Stream):-
-%	write(Stream,"-"),
-%	expression(A,Stream),
-%	expression(B,Stream).
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 % VINCOLO MINORE UGUALE
+% A + B #<= Valore
+A + B #<= V :-
+	atomic(V),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..2] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones(stream,2),
+	printf(stream, "];\n",[]),
+	printf(stream, "constraint int_lin_le(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	printf(stream, "],%d);\n", [V]),
+	close(stream).
+
+% A + B #<= C
+A + B #<= C :-
+	compound(C),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..3] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones(stream,2),
+	printf(stream, ",-1];\n",[]),
+	printf(stream, "constraint int_lin_le(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	write(stream, ",V"),
+	term_string(C,String3),
+	substring(String3,1,4,_,S3),
+	write(stream,S3),
+	printf(stream, "],", []),
+	printf(stream,"0);\n",[]),
+	close(stream).
+
+% A - B #<= Valore
+A - B #<= V :-
+	atomic(V),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..2] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones_modified(stream,2),
+	printf(stream, "];\n",[]),
+	printf(stream, "constraint int_lin_le(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	printf(stream, "],%d);\n", [V]),
+	close(stream).
+
+% A - B #<= C
+A - B #<= C :-
+	compound(C),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..3] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones_modified(stream,2),
+	printf(stream, ",-1];\n",[]),
+	printf(stream, "constraint int_lin_le(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	write(stream, ",V"),
+	term_string(C,String3),
+	substring(String3,1,4,_,S3),
+	write(stream,S3),
+	printf(stream, "],", []),
+	printf(stream,"0);\n",[]),
+	close(stream).
+
+
+% A*B #<= Valore
+A * B #<= V :-
+	atomic(V),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	term_string(A,String1),
+	substring(String1,1,4,_,S1),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	%get_var_dom(S1,V1A,V2A),
+	%get_var_dom(S2,V1B,V2B),
+	string_concat("V",S1,VariableNameA),
+	dominio(VariableNameA,V1A,V2A),
+	string_concat("V",S2,VariableNameB),
+	dominio(VariableNameB,V1B,V2B),
+	Vmax is V2A * V2B,
+	Vmin is V1A * V1B,
+	printf(stream,"var %d..%d: X_INTRODUCED_0_ ::var_is_introduced :: is_defined_var;\n ", [Vmin, Vmax]),
+	printf(stream,"constraint int_le(X_INTRODUCED_0_,%d);\n",[V]),
+	printf(stream,"constraint int_times(",[]),
+	write(stream, "V"),
+	write(stream,S1),
+	printf(stream,",",[]),
+	write(stream, "V"),
+	write(stream,S2),
+	printf(stream,",X_INTRODUCED_0_):: defines_var(X_INTRODUCED_0_);\n",[]),
+	close(stream).
+
 % notazione infissa
 % A #<= B
 A #<= B :-
@@ -432,6 +716,134 @@ A #<= B :-
 
 
 % VINCOLO MAGGIORE
+% A + B #> Valore
+A + B #> V :-
+	atomic(V),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..2] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones(stream,2),
+	printf(stream, "];\n",[]),
+	printf(stream, "constraint int_lin_gt(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	printf(stream, "],%d);\n", [V]),
+	close(stream).
+
+% A + B #> C
+A + B #> C :-
+	compound(C),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..3] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones(stream,2),
+	printf(stream, ",-1];\n",[]),
+	printf(stream, "constraint int_lin_gt(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	write(stream, ",V"),
+	term_string(C,String3),
+	substring(String3,1,4,_,S3),
+	write(stream,S3),
+	printf(stream, "],", []),
+	printf(stream,"0);\n",[]),
+	close(stream).
+
+% A - B #> Valore
+A - B #> V :-
+	atomic(V),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..2] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones_modified(stream,2),
+	printf(stream, "];\n",[]),
+	printf(stream, "constraint int_lin_gt(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	printf(stream, "],%d);\n", [V]),
+	close(stream).
+
+% A - B #> C
+A - B #> C :-
+	compound(C),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..3] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones_modified(stream,2),
+	printf(stream, ",-1];\n",[]),
+	printf(stream, "constraint int_lin_gt(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	write(stream, ",V"),
+	term_string(C,String3),
+	substring(String3,1,4,_,S3),
+	write(stream,S3),
+	printf(stream, "],", []),
+	printf(stream,"0);\n",[]),
+	close(stream).
+
+
+% A*B #> Valore
+A * B #> V :-
+	atomic(V),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	term_string(A,String1),
+	substring(String1,1,4,_,S1),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	%get_var_dom(S1,V1A,V2A),
+	%get_var_dom(S2,V1B,V2B),
+	string_concat("V",S1,VariableNameA),
+	dominio(VariableNameA,V1A,V2A),
+	string_concat("V",S2,VariableNameB),
+	dominio(VariableNameB,V1B,V2B),
+	Vmax is V2A * V2B,
+	Vmin is V1A * V1B,
+	printf(stream,"var %d..%d: X_INTRODUCED_0_ ::var_is_introduced :: is_defined_var;\n ", [Vmin, Vmax]),
+	printf(stream,"constraint int_gt(X_INTRODUCED_0_,%d);\n",[V]),
+	printf(stream,"constraint int_times(",[]),
+	write(stream, "V"),
+	write(stream,S1),
+	printf(stream,",",[]),
+	write(stream, "V"),
+	write(stream,S2),
+	printf(stream,",X_INTRODUCED_0_):: defines_var(X_INTRODUCED_0_);\n",[]),
+	close(stream).
+
 % notazione infissa
 % A #> B
 A #> B :-
@@ -470,6 +882,134 @@ A #> B :-
 	close(stream).
 
 % VINCOLO MAGGIORE UGUALE
+% A + B #>= Valore
+A + B #>= V :-
+	atomic(V),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..2] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones(stream,2),
+	printf(stream, "];\n",[]),
+	printf(stream, "constraint int_lin_ge(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	printf(stream, "],%d);\n", [V]),
+	close(stream).
+
+% A + B #>= C
+A + B #>= C :-
+	compound(C),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..3] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones(stream,2),
+	printf(stream, ",-1];\n",[]),
+	printf(stream, "constraint int_lin_ge(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	write(stream, ",V"),
+	term_string(C,String3),
+	substring(String3,1,4,_,S3),
+	write(stream,S3),
+	printf(stream, "],", []),
+	printf(stream,"0);\n",[]),
+	close(stream).
+
+% A - B #>= Valore
+A - B #>= V :-
+	atomic(V),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..2] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones_modified(stream,2),
+	printf(stream, "];\n",[]),
+	printf(stream, "constraint int_lin_ge(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	printf(stream, "],%d);\n", [V]),
+	close(stream).
+
+% A - B #>= C
+A - B #>= C :-
+	compound(C),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	printf(stream,"array [1..3] of int: X_INTRODUCED_0_ = [",[]),
+	print_list_of_ones_modified(stream,2),
+	printf(stream, ",-1];\n",[]),
+	printf(stream, "constraint int_lin_ge(X_INTRODUCED_0_,[", []),
+	write(stream, "V"),
+	term_string(A,String),
+	substring(String,1,4,_,S),
+	write(stream,S),
+	write(stream, ","),
+	write(stream, "V"),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	write(stream,S2),
+	write(stream, ",V"),
+	term_string(C,String3),
+	substring(String3,1,4,_,S3),
+	write(stream,S3),
+	printf(stream, "],", []),
+	printf(stream,"0);\n",[]),
+	close(stream).
+
+
+% A*B #>= Valore
+A * B #>= V :-
+	atomic(V),
+	compound(A),
+	compound(B),
+	open("model.fzn", append, stream),
+	term_string(A,String1),
+	substring(String1,1,4,_,S1),
+	term_string(B,String2),
+	substring(String2,1,4,_,S2),
+	%get_var_dom(S1,V1A,V2A),
+	%get_var_dom(S2,V1B,V2B),
+	string_concat("V",S1,VariableNameA),
+	dominio(VariableNameA,V1A,V2A),
+	string_concat("V",S2,VariableNameB),
+	dominio(VariableNameB,V1B,V2B),
+	Vmax is V2A * V2B,
+	Vmin is V1A * V1B,
+	printf(stream,"var %d..%d: X_INTRODUCED_0_ ::var_is_introduced :: is_defined_var;\n ", [Vmin, Vmax]),
+	printf(stream,"constraint int_ge(X_INTRODUCED_0_,%d);\n",[V]),
+	printf(stream,"constraint int_times(",[]),
+	write(stream, "V"),
+	write(stream,S1),
+	printf(stream,",",[]),
+	write(stream, "V"),
+	write(stream,S2),
+	printf(stream,",X_INTRODUCED_0_):: defines_var(X_INTRODUCED_0_);\n",[]),
+	close(stream).
+
 % notazione infissa
 % A #>= B
 A #>= B :-

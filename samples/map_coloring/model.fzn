@@ -1,0 +1,15 @@
+var 1..4: V_274:: output_var;
+var 1..4: V_321:: output_var;
+var 1..4: V_368:: output_var;
+var 1..4: V_415:: output_var;
+var 1..4: V_462:: output_var;
+constraint int_ne(V_274,V_321);
+constraint int_ne(V_274,V_368);
+constraint int_ne(V_274,V_415);
+constraint int_ne(V_274,V_462);
+constraint int_ne(V_321,V_368);
+constraint int_ne(V_321,V_415);
+constraint int_ne(V_321,V_462);
+constraint int_ne(V_368,V_415);
+constraint int_ne(V_415,V_462);
+solve satisfy;
